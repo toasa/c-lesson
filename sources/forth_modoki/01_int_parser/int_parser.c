@@ -1,8 +1,7 @@
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
 
 static const char* const input = "123 456  1203";
-
 
 int main() {
     int answer1 = 0;
@@ -10,7 +9,6 @@ int main() {
     int answer3 = 0;
 
     // write something here.
-
 
     // verity result.
     assert(answer1 == 123);
