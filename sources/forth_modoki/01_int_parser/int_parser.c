@@ -1,14 +1,28 @@
 #include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 
-static const char* const input = "123 456  1203";
+static const char *const input = "123 456  1203";
+
+int single_int_parse(const char **s) {
+    int n = 0;
+
+    // Skip white space.
+    for (; isspace(**s); (*s)++)
+        ;
+
+    for (; isdigit(**s); (*s)++)
+        n = n * 10 + **s - '0';
+
+    return n;
+}
 
 int main() {
-    int answer1 = 0;
-    int answer2 = 0;
-    int answer3 = 0;
+    const char *s = input;
 
-    // write something here.
+    int answer1 = single_int_parse(&s);
+    int answer2 = single_int_parse(&s);
+    int answer3 = single_int_parse(&s);
 
     // verity result.
     assert(answer1 == 123);
