@@ -3,7 +3,7 @@
 static int dict_pos = 0;
 static struct KeyValue dict_array[1024];
 
-void dict_put(char *key, struct Token *elem) {
+void dict_put(const char *key, struct Token *elem) {
     for (int i = 0; i < dict_pos; i++) {
         if (streq(key, dict_array[i].key)) {
             // Already key exists, so we update value.
@@ -17,7 +17,7 @@ void dict_put(char *key, struct Token *elem) {
     dict_pos++;
 }
 
-int dict_get(char *key, struct Token *out_elem) {
+int dict_get(const char *key, struct Token *out_elem) {
     for (int i = 0; i < dict_pos; i++) {
         if (streq(key, dict_array[i].key)) {
             *out_elem = *dict_array[i].val;
