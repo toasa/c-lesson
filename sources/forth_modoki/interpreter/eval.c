@@ -107,12 +107,12 @@ static void test_eval_variable(void) {
     assert(expect == actual);
 }
 
-int main() {
-    test_eval_num_one();
-    test_eval_num_two();
-    test_eval_num_add();
-    test_eval_num_add_one_to_nine();
-    test_eval_variable();
-
-    return 0;
-}
+// int main() {
+//     test_eval_num_one();
+//     test_eval_num_two();
+//     test_eval_num_add();
+//     test_eval_num_add_one_to_nine();
+//     test_eval_variable();
+//
+//     return 0;
+// }
