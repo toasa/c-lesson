@@ -67,8 +67,8 @@ static void test_dict_val_update(void) {
     assert(t_out.u.number == 20);
 }
 
-int main() {
-    test_dict_get_no_exist();
-    test_dict_put_get();
-    test_dict_val_update();
-}
+// int main() {
+//     test_dict_get_no_exist();
+//     test_dict_put_get();
+//     test_dict_val_update();
+// }
