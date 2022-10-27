@@ -52,6 +52,19 @@ int parse_one(int c, struct Token *out_token);
 void parser_print_all(void);
 
 //
+// dict.c
+//
+
+struct KeyValue {
+    char *key;
+    struct Token *val;
+};
+
+void dict_put(char *key, struct Token *elem);
+int dict_get(char *key, struct Token *out_elem);
+void dict_print_all();
+
+//
 // stack.c
 //
 
