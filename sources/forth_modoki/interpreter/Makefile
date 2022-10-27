@@ -1,4 +1,4 @@
-SRCS = cl_getc.c eval.c parser.c stack.c token.c util.c
+SRCS = cl_getc.c eval.c parser.c stack.c token.c util.c dict.c
 
 a.out: $(SRCS)
 	$(CC) $(SRCS)
