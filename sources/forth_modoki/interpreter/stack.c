@@ -2,15 +2,15 @@
 
 #define STACK_SIZE 1024
 
-static struct Token *stack[STACK_SIZE];
+static struct Element *stack[STACK_SIZE];
 static unsigned head = 0;
 
-void stack_push(struct Token *t) {
-    stack[head] = t;
+void stack_push(struct Element *e) {
+    stack[head] = e;
     head++;
 }
 
-struct Token *stack_pop(void) {
+struct Element *stack_pop(void) {
     if (head == 0)
         return NULL;
     head--;
@@ -21,35 +21,35 @@ bool stack_is_empty(void) { return head == 0; }
 
 void stack_print_all(void) {
     for (unsigned i = 0; i < head; i++)
-        token_print(stack[i]);
+        element_print(stack[i]);
 }
 
 static void test_pop_only(void) {
-    struct Token *t = stack_pop();
-    assert(t == NULL);
+    struct Element *e = stack_pop();
+    assert(e == NULL);
 }
 
 static void test_push_and_pop(void) {
-    struct Token *t_in = new_num_token(10);
+    struct Element *e_in = new_num_element(10);
 
-    stack_push(t_in);
-    struct Token *t_out = stack_pop();
+    stack_push(e_in);
+    struct Element *e_out = stack_pop();
 
-    assert(t_out->u.number == 10);
+    assert(e_out->u.number == 10);
 }
 
 static void test_double_push_and_pop(void) {
-    struct Token *t1_in = new_num_token(10);
-    struct Token *t2_in = new_num_token(20);
+    struct Element *e1_in = new_num_element(10);
+    struct Element *e2_in = new_num_element(20);
 
-    stack_push(t1_in);
-    stack_push(t2_in);
+    stack_push(e1_in);
+    stack_push(e2_in);
 
-    struct Token *t2_out = stack_pop();
-    struct Token *t1_out = stack_pop();
+    struct Element *e2_out = stack_pop();
+    struct Element *e1_out = stack_pop();
 
-    assert(t2_out->u.number == 20);
-    assert(t1_out->u.number == 10);
+    assert(e2_out->u.number == 20);
+    assert(e1_out->u.number == 10);
 }
 
 static void do_unittests(void) {
