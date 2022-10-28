@@ -12,7 +12,7 @@ static void eval_exe_name(const char *name) {
         struct Element *key = stack_pop();
         dict_put(key->u.name, val);
     } else if (dict_get(name, &e)) {
-        stack_push((&e));
+        stack_push(copy_element(&e));
     }
 }
 
@@ -38,8 +38,8 @@ void eval(void) {
         }
     } while (ch != EOF);
 
-    if (!stack_is_empty())
-        stack_print_all();
+    // if (!stack_is_empty())
+    //     stack_print_all();
 }
 
 static void test_eval_num_one(void) {
@@ -107,12 +107,12 @@ static void test_eval_variable(void) {
     assert(expect == actual);
 }
 
-// int main() {
-//     test_eval_num_one();
-//     test_eval_num_two();
-//     test_eval_num_add();
-//     test_eval_num_add_one_to_nine();
-//     test_eval_variable();
-//
-//     return 0;
-// }
+void test_eval(void) {
+    test_eval_num_one();
+    test_eval_num_two();
+    test_eval_num_add();
+    test_eval_num_add_one_to_nine();
+    test_eval_variable();
+
+    printf("%s: OK\n", __func__);
+}

@@ -157,14 +157,12 @@ static void test_dict_val_update(void) {
     assert(e_out.u.number == 20);
 }
 
-int main() {
+void test_dict(void) {
     test_dict_get_no_exist();
     test_dict_put_get();
     test_dict_multi_put_get();
     test_dict_multi_put_get_conflict();
     test_dict_val_update();
 
-    printf("OK\n");
-
-    // dict_print_all();
+    printf("%s: OK\n", __func__);
 }
