@@ -56,11 +56,6 @@ void parser_print_all(void);
 // dict.c
 //
 
-struct KeyValue {
-    const char *key;
-    struct Token *val;
-};
-
 void dict_put(const char *key, struct Token *elem);
 int dict_get(const char *key, struct Token *out_elem);
 void dict_print_all();
