@@ -53,19 +53,40 @@ int parse_one(int c, struct Token *out_token);
 void parser_print_all(void);
 
 //
+// elem.c
+//
+
+enum ElementType {
+    ELEM_NUMBER,
+    ELEM_LITERAL_NAME,
+};
+
+struct Element {
+    enum ElementType etype;
+    union {
+        int number;
+        char *name;
+    } u;
+};
+
+struct Element *new_num_element(int num);
+struct Element *new_lit_name_element(char *name);
+void element_print(struct Element *e);
+
+//
 // dict.c
 //
 
-void dict_put(const char *key, struct Token *elem);
-int dict_get(const char *key, struct Token *out_elem);
+void dict_put(const char *key, struct Element *elem);
+int dict_get(const char *key, struct Element *out_elem);
 void dict_print_all();
 
 //
 // stack.c
 //
 
-void stack_push(struct Token *t);
-struct Token *stack_pop(void);
+void stack_push(struct Element *e);
+struct Element *stack_pop(void);
 bool stack_is_empty(void);
 void stack_print_all(void);
 

@@ -1,18 +1,18 @@
 #include "clesson.h"
 
 static void eval_exe_name(const char *name) {
-    struct Token t = {0};
+    struct Element e = {0};
 
     if (streq(name, "add")) {
-        struct Token *rhs = stack_pop();
-        struct Token *lhs = stack_pop();
-        stack_push(new_num_token(lhs->u.number + rhs->u.number));
+        struct Element *rhs = stack_pop();
+        struct Element *lhs = stack_pop();
+        stack_push(new_num_element(lhs->u.number + rhs->u.number));
     } else if (streq(name, "def")) {
-        struct Token *val = stack_pop();
-        struct Token *key = stack_pop();
+        struct Element *val = stack_pop();
+        struct Element *key = stack_pop();
         dict_put(key->u.name, val);
-    } else if (dict_get(name, &t)) {
-        stack_push(copy(&t));
+    } else if (dict_get(name, &e)) {
+        stack_push((&e));
     }
 }
 
@@ -25,13 +25,13 @@ void eval(void) {
 
         switch (t.ltype) {
         case NUMBER:
-            stack_push(new_num_token(t.u.number));
+            stack_push(new_num_element(t.u.number));
             break;
         case EXECUTABLE_NAME:
             eval_exe_name(t.u.name);
             break;
         case LITERAL_NAME:
-            stack_push(new_literal_token(t.u.name));
+            stack_push(new_lit_name_element(t.u.name));
             break;
         default:
             break;
