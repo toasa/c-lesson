@@ -51,22 +51,21 @@ void dict_put(const char *key, struct Element *val) {
     cur->next = n;
 }
 
-int dict_get(const char *key, struct Element *out_elem) {
+struct Element *dict_get(const char *key) {
     int idx = hash(key);
 
     struct Node *head = node_array[idx];
     if (head == NULL)
-        return 0;
+        return NULL;
 
     struct Node *cur = head;
     for (; cur != NULL; cur = cur->next) {
         if (streq(cur->key, key)) {
-            *out_elem = *cur->val;
-            return 1;
+            return cur->val;
         }
     }
 
-    return 0;
+    return NULL;
 }
 
 void dict_print_all(void) {
@@ -86,21 +85,18 @@ void dict_print_all(void) {
 }
 
 static void test_dict_get_no_exist(void) {
-    struct Element e;
-    int res = dict_get("nothing", &e);
+    struct Element *e = dict_get("nothing");
 
-    assert(res == 0);
+    assert(e == NULL);
 }
 
 static void test_dict_put_get(void) {
     struct Element *e_in = new_num_element(10);
     dict_put("foo", e_in);
 
-    struct Element e_out;
-    int res = dict_get("foo", &e_out);
+    struct Element *e_out = dict_get("foo");
 
-    assert(res == 1);
-    assert(e_out.u.number == 10);
+    assert(e_out->u.number == 10);
 }
 
 static void test_dict_multi_put_get(void) {
@@ -111,16 +107,13 @@ static void test_dict_multi_put_get(void) {
     dict_put("bar", e2_in);
     dict_put("baz", e3_in);
 
-    struct Element e1_out;
-    struct Element e2_out;
-    struct Element e3_out;
-    assert(dict_get("foo", &e1_out) == 1);
-    assert(dict_get("bar", &e2_out) == 1);
-    assert(dict_get("baz", &e3_out) == 1);
+    struct Element *e1_out = dict_get("foo");
+    struct Element *e2_out = dict_get("bar");
+    struct Element *e3_out = dict_get("baz");
 
-    assert(e1_out.u.number == 10);
-    assert(e2_out.u.number == 20);
-    assert(e3_out.u.number == 30);
+    assert(e1_out->u.number == 10);
+    assert(e2_out->u.number == 20);
+    assert(e3_out->u.number == 30);
 }
 
 static void test_dict_multi_put_get_conflict(void) {
@@ -131,16 +124,13 @@ static void test_dict_multi_put_get_conflict(void) {
     dict_put("arb", e2_in);
     dict_put("rba", e3_in);
 
-    struct Element e1_out;
-    struct Element e2_out;
-    struct Element e3_out;
-    assert(dict_get("bar", &e1_out) == 1);
-    assert(dict_get("arb", &e2_out) == 1);
-    assert(dict_get("rba", &e3_out) == 1);
+    struct Element *e1_out = dict_get("bar");
+    struct Element *e2_out = dict_get("arb");
+    struct Element *e3_out = dict_get("rba");
 
-    assert(e1_out.u.number == 10);
-    assert(e2_out.u.number == 20);
-    assert(e3_out.u.number == 30);
+    assert(e1_out->u.number == 10);
+    assert(e2_out->u.number == 20);
+    assert(e3_out->u.number == 30);
 }
 
 static void test_dict_val_update(void) {
@@ -150,11 +140,9 @@ static void test_dict_val_update(void) {
     dict_put("foo", e1);
     dict_put("foo", e2);
 
-    struct Element e_out;
-    int res = dict_get("foo", &e_out);
+    struct Element *e_out = dict_get("foo");
 
-    assert(res == 1);
-    assert(e_out.u.number == 20);
+    assert(e_out->u.number == 20);
 }
 
 void test_dict(void) {

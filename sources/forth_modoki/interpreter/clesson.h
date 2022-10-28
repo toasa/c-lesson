@@ -85,7 +85,7 @@ void element_print(struct Element *e);
 //
 
 void dict_put(const char *key, struct Element *elem);
-int dict_get(const char *key, struct Element *out_elem);
+struct Element *dict_get(const char *key);
 void dict_print_all(void);
 void test_dict(void);
 
