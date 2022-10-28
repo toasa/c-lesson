@@ -1,7 +1,7 @@
 #include "clesson.h"
 
 static void eval_exe_name(const char *name) {
-    struct Element e = {0};
+    struct Element *e;
 
     if (streq(name, "add")) {
         struct Element *rhs = stack_pop();
@@ -11,8 +11,8 @@ static void eval_exe_name(const char *name) {
         struct Element *val = stack_pop();
         struct Element *key = stack_pop();
         dict_put(key->u.name, val);
-    } else if (dict_get(name, &e)) {
-        stack_push(copy_element(&e));
+    } else if ((e = dict_get(name))) {
+        stack_push(copy_element(e));
     }
 }
 
