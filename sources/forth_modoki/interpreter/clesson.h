@@ -43,7 +43,6 @@ void token_print(struct Token *t);
 struct Token *new_token(enum LexicalType ty);
 struct Token *new_num_token(int val);
 struct Token *new_literal_token(char *name);
-struct Token *copy(struct Token *t);
 
 //
 // parser.c
@@ -77,7 +76,6 @@ struct Element {
 
 struct Element *new_num_element(int num);
 struct Element *new_lit_name_element(char *name);
-struct Element *copy_element(struct Element *e);
 void element_print(struct Element *e);
 
 //

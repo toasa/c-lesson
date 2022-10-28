@@ -43,9 +43,3 @@ struct Token *new_literal_token(char *name) {
     t->u.name = name;
     return t;
 }
-
-struct Token *copy(struct Token *t) {
-    struct Token *new = calloc(1, sizeof(struct Token));
-    *new = *t;
-    return new;
-}

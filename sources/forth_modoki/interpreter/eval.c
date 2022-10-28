@@ -12,7 +12,7 @@ static void eval_exe_name(const char *name) {
         struct Element *key = stack_pop();
         dict_put(key->u.name, val);
     } else if ((e = dict_get(name))) {
-        stack_push(copy_element(e));
+        stack_push(e);
     }
 }
 
