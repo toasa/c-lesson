@@ -64,6 +64,7 @@ void test_eval(void);
 enum ElementType {
     ELEM_NUMBER,
     ELEM_LITERAL_NAME,
+    ELEM_C_FUNC,
 };
 
 struct Element {
@@ -71,11 +72,13 @@ struct Element {
     union {
         int number;
         char *name;
+        void (*cfunc)();
     } u;
 };
 
 struct Element *new_num_element(int num);
 struct Element *new_lit_name_element(char *name);
+struct Element *new_cfunc_element(void (*cfunc)());
 void element_print(struct Element *e);
 
 //

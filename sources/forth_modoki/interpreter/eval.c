@@ -1,18 +1,57 @@
 #include "clesson.h"
 
-static void eval_exe_name(const char *name) {
-    struct Element *e;
+static void add_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number + rhs->u.number));
+}
 
-    if (streq(name, "add")) {
-        struct Element *rhs = stack_pop();
-        struct Element *lhs = stack_pop();
-        stack_push(new_num_element(lhs->u.number + rhs->u.number));
-    } else if (streq(name, "def")) {
-        struct Element *val = stack_pop();
-        struct Element *key = stack_pop();
-        dict_put(key->u.name, val);
-    } else if ((e = dict_get(name))) {
+static void sub_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number - rhs->u.number));
+}
+
+static void mul_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number * rhs->u.number));
+}
+
+static void div_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number / rhs->u.number));
+}
+
+static void def(void) {
+    struct Element *val = stack_pop();
+    struct Element *key = stack_pop();
+    dict_put(key->u.name, val);
+}
+
+static void register_primitives(void) {
+    dict_put("add", new_cfunc_element(add_op));
+    dict_put("sub", new_cfunc_element(sub_op));
+    dict_put("mul", new_cfunc_element(mul_op));
+    dict_put("div", new_cfunc_element(div_op));
+    dict_put("def", new_cfunc_element(def));
+}
+
+static void eval_exe_name(const char *name) {
+    struct Element *e = dict_get(name);
+    switch (e->etype) {
+    case ELEM_C_FUNC:
+        e->u.cfunc();
+        break;
+    default: {
+        if (e == NULL) {
+            fprintf(stderr, "Unbind variable: %s\n", name);
+            abort();
+        }
         stack_push(e);
+        break;
+    }
     }
 }
 
@@ -83,6 +122,42 @@ static void test_eval_num_add(void) {
     assert(expect == actual);
 }
 
+static void test_eval_num_sub(void) {
+    char *input = "5 3 sub";
+    int expect = 2;
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
+static void test_eval_num_mul(void) {
+    char *input = "5 3 mul";
+    int expect = 15;
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
+static void test_eval_num_div(void) {
+    char *input = "90 5 div";
+    int expect = 18;
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
 static void test_eval_num_add_one_to_nine() {
     char *input = "1 2 3 add add 4 5 6 7 8 9 add add add add add add";
     int expect = 45;
@@ -108,9 +183,14 @@ static void test_eval_variable(void) {
 }
 
 void test_eval(void) {
+    register_primitives();
+
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
+    test_eval_num_sub();
+    test_eval_num_mul();
+    test_eval_num_div();
     test_eval_num_add_one_to_nine();
     test_eval_variable();
 
