@@ -177,19 +177,13 @@ static void test_parse_one_close_curly() {
     assert(token.u.onechar == '}');
 }
 
-static void unit_tests() {
+void test_parser(void) {
     test_parse_one_empty_should_return_END_OF_FILE();
     test_parse_one_number();
     test_parse_one_executable_name();
     test_parse_one_literal_name();
     test_parse_one_open_curly();
     test_parse_one_close_curly();
-}
 
-// int main() {
-//     unit_tests();
-//
-//     cl_getc_set_src("123 45 add /some { 2 3 add } def");
-//     parser_print_all();
-//     return 0;
-// }
+    printf("%s: OK\n", __func__);
+}

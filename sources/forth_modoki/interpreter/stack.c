@@ -52,15 +52,10 @@ static void test_double_push_and_pop(void) {
     assert(e1_out->u.number == 10);
 }
 
-static void do_unittests(void) {
+void test_stack(void) {
     test_pop_only();
     test_push_and_pop();
     test_double_push_and_pop();
 
-    printf("OK\n");
+    printf("%s: OK\n", __func__);
 }
-
-// int main() {
-//     do_unittests();
-//     return 0;
-// }

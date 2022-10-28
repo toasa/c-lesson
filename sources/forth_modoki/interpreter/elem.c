@@ -14,6 +14,12 @@ struct Element *new_lit_name_element(char *name) {
     return e;
 }
 
+struct Element *copy_element(struct Element *e) {
+    struct Element *new = calloc(1, sizeof(struct Element));
+    *new = *e;
+    return new;
+}
+
 void element_print(struct Element *e) {
     switch (e->etype) {
     case ELEM_NUMBER:

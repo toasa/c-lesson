@@ -51,6 +51,12 @@ struct Token *copy(struct Token *t);
 
 int parse_one(int c, struct Token *out_token);
 void parser_print_all(void);
+void test_parser(void);
+
+//
+// eval.c
+//
+void test_eval(void);
 
 //
 // elem.c
@@ -71,6 +77,7 @@ struct Element {
 
 struct Element *new_num_element(int num);
 struct Element *new_lit_name_element(char *name);
+struct Element *copy_element(struct Element *e);
 void element_print(struct Element *e);
 
 //
@@ -80,6 +87,7 @@ void element_print(struct Element *e);
 void dict_put(const char *key, struct Element *elem);
 int dict_get(const char *key, struct Element *out_elem);
 void dict_print_all();
+void test_dict(void);
 
 //
 // stack.c
@@ -89,6 +97,7 @@ void stack_push(struct Element *e);
 struct Element *stack_pop(void);
 bool stack_is_empty(void);
 void stack_print_all(void);
+void test_stack(void);
 
 //
 // util.c
