@@ -9,12 +9,6 @@
 #include <string.h>
 
 //
-// cl_getc.c
-//
-int cl_getc(void);
-void cl_getc_set_src(const char *str);
-
-//
 // token.c
 //
 
@@ -38,23 +32,18 @@ struct Token {
     } u;
 };
 
+struct Token **tokenize(const char *input);
 void token_print(struct Token *t);
+void test_tokenize(void);
 
 struct Token *new_token(enum LexicalType ty);
 struct Token *new_num_token(int val);
 struct Token *new_literal_token(char *name);
 
 //
-// parser.c
-//
-
-int parse_one(int c, struct Token *out_token);
-void parser_print_all(void);
-void test_parser(void);
-
-//
 // eval.c
 //
+
 void test_eval(void);
 
 //
@@ -105,5 +94,7 @@ void test_stack(void);
 //
 
 bool streq(const char *s1, const char *s2);
+void assert_int_eq(int x, int y);
+void assert_str_eq(const char *s1, const char *s2);
 
 #endif
