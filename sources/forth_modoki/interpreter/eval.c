@@ -55,27 +55,23 @@ static void eval_exe_name(const char *name) {
     }
 }
 
-void eval(void) {
-    int ch = EOF;
-    struct Token t = {UNKNOWN, {0}};
-
-    do {
-        ch = parse_one(ch, &t);
-
-        switch (t.ltype) {
+void eval(struct Token *tokens[]) {
+    for (int i = 0; tokens[i]->ltype != END_OF_FILE; i++) {
+        struct Token *t = tokens[i];
+        switch (t->ltype) {
         case NUMBER:
-            stack_push(new_num_element(t.u.number));
+            stack_push(new_num_element(t->u.number));
             break;
         case EXECUTABLE_NAME:
-            eval_exe_name(t.u.name);
+            eval_exe_name(t->u.name);
             break;
         case LITERAL_NAME:
-            stack_push(new_lit_name_element(t.u.name));
+            stack_push(new_lit_name_element(t->u.name));
             break;
         default:
             break;
         }
-    } while (ch != EOF);
+    }
 
     // if (!stack_is_empty())
     //     stack_print_all();
@@ -85,13 +81,12 @@ static void test_eval_num_one(void) {
     char *input = "123";
     int expect = 123;
 
-    cl_getc_set_src(input);
-
-    eval();
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
 
     int actual = stack_pop()->u.number;
 
-    assert(expect == actual);
+    assert_int_eq(expect, actual);
 }
 
 static void test_eval_num_two(void) {
@@ -99,24 +94,22 @@ static void test_eval_num_two(void) {
     int expect1 = 456;
     int expect2 = 123;
 
-    cl_getc_set_src(input);
-
-    eval();
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
 
     int actual1 = stack_pop()->u.number;
     int actual2 = stack_pop()->u.number;
 
-    assert(expect1 == actual1);
-    assert(expect2 == actual2);
+    assert_int_eq(expect1, actual1);
+    assert_int_eq(expect2, actual2);
 }
 
 static void test_eval_num_add(void) {
     char *input = "1 2 add";
     int expect = 3;
 
-    cl_getc_set_src(input);
-
-    eval();
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
 
     int actual = stack_pop()->u.number;
     assert(expect == actual);
@@ -126,9 +119,8 @@ static void test_eval_num_sub(void) {
     char *input = "5 3 sub";
     int expect = 2;
 
-    cl_getc_set_src(input);
-
-    eval();
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
 
     int actual = stack_pop()->u.number;
     assert(expect == actual);
@@ -138,9 +130,8 @@ static void test_eval_num_mul(void) {
     char *input = "5 3 mul";
     int expect = 15;
 
-    cl_getc_set_src(input);
-
-    eval();
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
 
     int actual = stack_pop()->u.number;
     assert(expect == actual);
@@ -150,9 +141,8 @@ static void test_eval_num_div(void) {
     char *input = "90 5 div";
     int expect = 18;
 
-    cl_getc_set_src(input);
-
-    eval();
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
 
     int actual = stack_pop()->u.number;
     assert(expect == actual);
@@ -162,9 +152,8 @@ static void test_eval_num_add_one_to_nine() {
     char *input = "1 2 3 add add 4 5 6 7 8 9 add add add add add add";
     int expect = 45;
 
-    cl_getc_set_src(input);
-
-    eval();
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
 
     int actual = stack_pop()->u.number;
     assert(expect == actual);
@@ -174,9 +163,8 @@ static void test_eval_variable(void) {
     char *input = "/foo 11 def foo 20 add";
     int expect = 31;
 
-    cl_getc_set_src(input);
-
-    eval();
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
 
     int actual = stack_pop()->u.number;
     assert(expect == actual);
