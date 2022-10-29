@@ -12,7 +12,7 @@
 // cl_getc.c
 //
 int cl_getc(void);
-void cl_getc_set_src(char *str);
+void cl_getc_set_src(const char *str);
 
 //
 // token.c
