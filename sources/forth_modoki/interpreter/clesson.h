@@ -44,6 +44,7 @@ struct Token *new_literal_token(char *name);
 // eval.c
 //
 
+void eval(struct Token *tokens[]);
 void test_eval(void);
 
 //
