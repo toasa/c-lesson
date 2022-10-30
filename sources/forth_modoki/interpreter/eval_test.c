@@ -82,6 +82,50 @@ static void test_eval_num_add_one_to_nine() {
     assert(expect == actual);
 }
 
+static void test_eval_eq(void) {
+    char *input = "1 2 eq";
+    int expect = 0;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
+static void test_eval_neq(void) {
+    char *input = "1 2 neq";
+    int expect = 1;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
+static void test_eval_gt(void) {
+    char *input = "1 2 gt";
+    int expect = 0;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
+static void test_eval_lt(void) {
+    char *input = "1 2 lt";
+    int expect = 1;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
 static void test_eval_variable(void) {
     char *input = "/foo 11 def foo 20 add";
     int expect = 31;
@@ -218,6 +262,12 @@ void test_eval(void) {
     test_eval_num_div();
     test_eval_num_add_one_to_nine();
     test_eval_variable();
+
+    test_eval_eq();
+    test_eval_neq();
+    test_eval_gt();
+    test_eval_lt();
+
     test_eval_exec_array_one_num();
     test_eval_exec_array_one_lit_name();
     test_eval_exec_array_one_exec_name();
