@@ -11,7 +11,6 @@ void assert_int_eq(int x, int y) {
 
 void assert_str_eq(const char *s1, const char *s2) {
     if (!streq(s1, s2)) {
-
         fprintf(stderr, "%s != %s\n", s1, s2);
         abort();
     }
