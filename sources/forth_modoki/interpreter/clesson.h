@@ -79,6 +79,7 @@ struct Element *new_lit_name_element(char *name);
 struct Element *new_exec_name_element(char *name);
 struct Element *new_cfunc_element(void (*cfunc)());
 struct Element *new_exec_array_element(struct ElementArray *ea);
+struct Element *copy_element(struct Element *e);
 void element_print(struct Element *e);
 
 //

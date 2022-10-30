@@ -126,6 +126,73 @@ static void test_eval_lt(void) {
     assert(expect == actual);
 }
 
+static void test_eval_pop(void) {
+    char *input = "1 2 pop";
+    int expect = 1;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
+static void test_eval_exch(void) {
+    char *input = "1 2 exch";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_pop()->u.number == 1);
+    assert(stack_pop()->u.number == 2);
+}
+
+static void test_eval_dup(void) {
+    char *input = "1 2 dup";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_pop()->u.number == 2);
+    assert(stack_pop()->u.number == 2);
+}
+
+static void test_eval_index0(void) {
+    char *input = "1 2 3 4 5 0 index";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_pop()->u.number == 5);
+    assert(stack_pop()->u.number == 5);
+    assert(stack_pop()->u.number == 4);
+}
+
+static void test_eval_index2(void) {
+    char *input = "1 2 3 4 5 2 index";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_pop()->u.number == 3);
+    assert(stack_pop()->u.number == 5);
+    assert(stack_pop()->u.number == 4);
+    assert(stack_pop()->u.number == 3);
+}
+
+static void test_eval_roll(void) {
+    char *input = "1 2 3 4 5 6 7 4 3 roll";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_pop()->u.number == 4);
+    assert(stack_pop()->u.number == 7);
+    assert(stack_pop()->u.number == 6);
+    assert(stack_pop()->u.number == 5);
+    assert(stack_pop()->u.number == 3);
+}
+
 static void test_eval_variable(void) {
     char *input = "/foo 11 def foo 20 add";
     int expect = 31;
@@ -267,6 +334,13 @@ void test_eval(void) {
     test_eval_neq();
     test_eval_gt();
     test_eval_lt();
+
+    test_eval_pop();
+    test_eval_exch();
+    test_eval_dup();
+    test_eval_index0();
+    test_eval_index2();
+    test_eval_roll();
 
     test_eval_exec_array_one_num();
     test_eval_exec_array_one_lit_name();

@@ -66,6 +66,63 @@ static void def(void) {
     dict_put(key->u.name, val);
 }
 
+static void pop_op(void) { stack_pop(); }
+
+static void exch_op(void) {
+    struct Element *e1 = stack_pop();
+    struct Element *e2 = stack_pop();
+    stack_push(e1);
+    stack_push(e2);
+}
+
+static void dup_op(void) {
+    struct Element *e1 = stack_pop();
+    struct Element *e2 = copy_element(e1);
+    stack_push(e1);
+    stack_push(e2);
+}
+
+static void index_op(void) {
+    int n = stack_pop()->u.number;
+    struct Element **elems = malloc(sizeof(struct Element *) * n);
+    for (int i = 0; i < n; i++)
+        elems[i] = stack_pop();
+
+    struct Element *e = stack_pop();
+    struct Element *new = copy_element(e);
+    stack_push(e);
+
+    for (int i = 0; i < n; i++)
+        stack_push(elems[n - (i + 1)]);
+
+    stack_push(new);
+
+    free(elems);
+}
+
+static void roll_op(void) {
+    int rot_n = stack_pop()->u.number;
+    int n = stack_pop()->u.number;
+    rot_n %= n;
+
+    struct Element **elems = malloc(sizeof(struct Element *) * n);
+
+    for (int i = 0; i < n; i++)
+        elems[n - (i + 1)] = stack_pop();
+
+    for (int i = 0; i < rot_n; i++) {
+        struct Element *last = elems[n - 1];
+        for (int j = n - 2; j >= 0; j--)
+            elems[j + 1] = elems[j];
+        elems[0] = last;
+    }
+
+    for (int i = 0; i < n; i++)
+        stack_push(elems[i]);
+
+    free(elems);
+}
+
 static void register_primitives(void) {
     dict_put("add", new_cfunc_element(add_op));
     dict_put("sub", new_cfunc_element(sub_op));
@@ -80,6 +137,12 @@ static void register_primitives(void) {
     dict_put("le", new_cfunc_element(le_op));
 
     dict_put("def", new_cfunc_element(def));
+
+    dict_put("pop", new_cfunc_element(pop_op));
+    dict_put("exch", new_cfunc_element(exch_op));
+    dict_put("dup", new_cfunc_element(dup_op));
+    dict_put("index", new_cfunc_element(index_op));
+    dict_put("roll", new_cfunc_element(roll_op));
 }
 
 static struct Token **_tokens;

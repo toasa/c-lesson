@@ -35,6 +35,12 @@ struct Element *new_exec_array_element(struct ElementArray *ea) {
     return e;
 }
 
+struct Element *copy_element(struct Element *e) {
+    struct Element *new = calloc(1, sizeof(struct Element));
+    *new = *e;
+    return new;
+}
+
 void element_print(struct Element *e) {
     switch (e->etype) {
     case ELEM_NUMBER:
