@@ -53,7 +53,14 @@ void test_eval(void);
 enum ElementType {
     ELEM_NUMBER,
     ELEM_LITERAL_NAME,
+    ELEM_EXECUTABLE_NAME,
     ELEM_C_FUNC,
+    ELEM_EXECUTABLE_ARRAY,
+};
+
+struct ElementArray {
+    int len;
+    struct Element **elem;
 };
 
 struct Element {
@@ -62,12 +69,15 @@ struct Element {
         int number;
         char *name;
         void (*cfunc)();
+        struct ElementArray *byte_code;
     } u;
 };
 
 struct Element *new_num_element(int num);
 struct Element *new_lit_name_element(char *name);
+struct Element *new_exec_name_element(char *name);
 struct Element *new_cfunc_element(void (*cfunc)());
+struct Element *new_exec_array_element(struct ElementArray *ea);
 void element_print(struct Element *e);
 
 //
