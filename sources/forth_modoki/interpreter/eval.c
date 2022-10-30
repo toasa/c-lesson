@@ -24,6 +24,42 @@ static void div_op(void) {
     stack_push(new_num_element(lhs->u.number / rhs->u.number));
 }
 
+static void eq_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number == rhs->u.number));
+}
+
+static void neq_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number != rhs->u.number));
+}
+
+static void gt_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number > rhs->u.number));
+}
+
+static void ge_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number >= rhs->u.number));
+}
+
+static void lt_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number < rhs->u.number));
+}
+
+static void le_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number <= rhs->u.number));
+}
+
 static void def(void) {
     struct Element *val = stack_pop();
     struct Element *key = stack_pop();
@@ -35,6 +71,14 @@ static void register_primitives(void) {
     dict_put("sub", new_cfunc_element(sub_op));
     dict_put("mul", new_cfunc_element(mul_op));
     dict_put("div", new_cfunc_element(div_op));
+
+    dict_put("eq", new_cfunc_element(eq_op));
+    dict_put("neq", new_cfunc_element(neq_op));
+    dict_put("gt", new_cfunc_element(gt_op));
+    dict_put("ge", new_cfunc_element(ge_op));
+    dict_put("lt", new_cfunc_element(lt_op));
+    dict_put("le", new_cfunc_element(le_op));
+
     dict_put("def", new_cfunc_element(def));
 }
 
