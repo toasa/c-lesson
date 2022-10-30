@@ -60,7 +60,7 @@ static void le_op(void) {
     stack_push(new_num_element(lhs->u.number <= rhs->u.number));
 }
 
-static void def(void) {
+static void def_op(void) {
     struct Element *val = stack_pop();
     struct Element *key = stack_pop();
     dict_put(key->u.name, val);
@@ -136,7 +136,7 @@ static void register_primitives(void) {
     dict_put("lt", new_cfunc_element(lt_op));
     dict_put("le", new_cfunc_element(le_op));
 
-    dict_put("def", new_cfunc_element(def));
+    dict_put("def", new_cfunc_element(def_op));
 
     dict_put("pop", new_cfunc_element(pop_op));
     dict_put("exch", new_cfunc_element(exch_op));
