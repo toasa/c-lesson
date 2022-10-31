@@ -141,6 +141,16 @@ static void if_op(void) {
         eval_elem(proc);
 }
 
+static void ifelse_op(void) {
+    struct Element *proc_else = stack_pop();
+    struct Element *proc_then = stack_pop();
+    struct Element *cond = stack_pop();
+    if (cond->u.number)
+        eval_elem(proc_then);
+    else
+        eval_elem(proc_else);
+}
+
 static void register_primitives(void) {
     dict_put("add", new_cfunc_element(add_op));
     dict_put("sub", new_cfunc_element(sub_op));
@@ -164,6 +174,7 @@ static void register_primitives(void) {
 
     dict_put("exec", new_cfunc_element(exec_op));
     dict_put("if", new_cfunc_element(if_op));
+    dict_put("ifelse", new_cfunc_element(ifelse_op));
 }
 
 static struct Token **_tokens;
