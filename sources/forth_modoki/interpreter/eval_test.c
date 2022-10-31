@@ -211,7 +211,7 @@ static void test_eval_exec_array_one_num(void) {
     eval(tokens);
 
     struct Element *e = stack_pop();
-    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(e->ty == ELEM_EXECUTABLE_ARRAY);
 
     struct ElementArray *ea = e->u.byte_code;
     assert(ea->len == 1);
@@ -225,11 +225,11 @@ static void test_eval_exec_array_one_lit_name(void) {
     eval(tokens);
 
     struct Element *e = stack_pop();
-    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(e->ty == ELEM_EXECUTABLE_ARRAY);
 
     struct ElementArray *ea = e->u.byte_code;
     assert(ea->len == 1);
-    assert(ea->elem[0]->etype == ELEM_LITERAL_NAME);
+    assert(ea->elem[0]->ty == ELEM_LITERAL_NAME);
     assert_str_eq(ea->elem[0]->u.name, "abc");
 }
 
@@ -240,11 +240,11 @@ static void test_eval_exec_array_one_exec_name(void) {
     eval(tokens);
 
     struct Element *e = stack_pop();
-    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(e->ty == ELEM_EXECUTABLE_ARRAY);
 
     struct ElementArray *ea = e->u.byte_code;
     assert(ea->len == 1);
-    assert(ea->elem[0]->etype == ELEM_EXECUTABLE_NAME);
+    assert(ea->elem[0]->ty == ELEM_EXECUTABLE_NAME);
     assert_str_eq(ea->elem[0]->u.name, "abc");
 }
 
@@ -255,7 +255,7 @@ static void test_eval_exec_array_multi_nums(void) {
     eval(tokens);
 
     struct Element *e = stack_pop();
-    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(e->ty == ELEM_EXECUTABLE_ARRAY);
 
     struct ElementArray *ea = e->u.byte_code;
     assert(ea->len == 2);
@@ -271,8 +271,8 @@ static void test_eval_multi_exec_arrays(void) {
 
     struct Element *e1 = stack_pop();
     struct Element *e2 = stack_pop();
-    assert(e1->etype == ELEM_EXECUTABLE_ARRAY);
-    assert(e2->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(e1->ty == ELEM_EXECUTABLE_ARRAY);
+    assert(e2->ty == ELEM_EXECUTABLE_ARRAY);
 
     assert(e1->u.byte_code->len == 1);
     assert(e1->u.byte_code->elem[0]->u.number == 22);
@@ -287,12 +287,12 @@ static void test_eval_nested_exec_arrays(void) {
     eval(tokens);
 
     struct Element *e = stack_pop();
-    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(e->ty == ELEM_EXECUTABLE_ARRAY);
     assert(e->u.byte_code->len == 3);
 
     struct ElementArray *ea = e->u.byte_code;
     assert(ea->elem[0]->u.number == 11);
-    assert(ea->elem[1]->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(ea->elem[1]->ty == ELEM_EXECUTABLE_ARRAY);
     assert(ea->elem[1]->u.byte_code->elem[0]->u.number == 22);
     assert(ea->elem[2]->u.number == 33);
 }
@@ -306,7 +306,7 @@ static void test_eval_nested_exec_arrays_exec(void) {
     assert(stack_pop()->u.number == 33);
 
     struct Element *e = stack_pop();
-    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(e->ty == ELEM_EXECUTABLE_ARRAY);
     assert(e->u.byte_code->len == 1);
     assert(e->u.byte_code->elem[0]->u.number == 22);
 

@@ -129,7 +129,7 @@ static void roll_op(void) {
 
 static void exec_op(void) {
     struct Element *e = stack_pop();
-    expect(e->etype == ELEM_EXECUTABLE_ARRAY,
+    expect(e->ty == ELEM_EXECUTABLE_ARRAY,
            "Exec op works on executable array only.");
     eval_exec_array(e->u.byte_code);
 }
@@ -216,24 +216,24 @@ static struct Element *compile_exec_array(void) {
     struct Element **elems = calloc(1, sizeof(struct Element) * cap);
 
     int len = 0;
-    for (; _tokens[pos]->ltype != END_OF_FILE; pos++) {
+    for (; _tokens[pos]->ty != TK_END_OF_FILE; pos++) {
         struct Token *t = _tokens[pos];
 
-        switch (t->ltype) {
-        case NUMBER:
+        switch (t->ty) {
+        case TK_NUMBER:
             elems[len++] = new_num_element(t->u.number);
             break;
-        case EXECUTABLE_NAME:
+        case TK_EXECUTABLE_NAME:
             elems[len++] = new_exec_name_element(t->u.name);
             break;
-        case LITERAL_NAME:
+        case TK_LITERAL_NAME:
             elems[len++] = new_lit_name_element(t->u.name);
             break;
-        case OPEN_CURLY:
+        case TK_OPEN_CURLY:
             pos++;
             elems[len++] = compile_exec_array();
             break;
-        case CLOSE_CURLY:
+        case TK_CLOSE_CURLY:
             goto succuess;
         default:
             break;
@@ -271,7 +271,7 @@ static void eval_exec_name(const char *name) {
 }
 
 static void eval_elem(struct Element *e, bool on_exec_arr_elems) {
-    switch (e->etype) {
+    switch (e->ty) {
     case ELEM_NUMBER:
     case ELEM_LITERAL_NAME:
         stack_push(e);
@@ -301,19 +301,19 @@ static void eval_exec_array(struct ElementArray *elems) {
 void eval(struct Token *tokens[]) {
     _init(tokens);
 
-    for (; _tokens[pos]->ltype != END_OF_FILE; pos++) {
+    for (; _tokens[pos]->ty != TK_END_OF_FILE; pos++) {
         struct Token *t = _tokens[pos];
-        switch (t->ltype) {
-        case NUMBER:
+        switch (t->ty) {
+        case TK_NUMBER:
             stack_push(new_num_element(t->u.number));
             break;
-        case EXECUTABLE_NAME:
+        case TK_EXECUTABLE_NAME:
             eval_exec_name(t->u.name);
             break;
-        case LITERAL_NAME:
+        case TK_LITERAL_NAME:
             stack_push(new_lit_name_element(t->u.name));
             break;
-        case OPEN_CURLY:
+        case TK_OPEN_CURLY:
             pos++;
             stack_push(compile_exec_array());
             break;
