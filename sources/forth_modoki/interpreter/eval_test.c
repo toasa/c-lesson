@@ -320,6 +320,17 @@ static void test_eval_exec_array_nested_def_and_eval(void) {
     assert(expect == actual);
 }
 
+static void test_eval_exec_op(void) {
+    char *input = "{10 20 add} exec";
+    int expect = 10 + 20;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
 void test_eval(void) {
     test_eval_num_one();
     test_eval_num_two();
@@ -350,6 +361,8 @@ void test_eval(void) {
     test_eval_nested_exec_arrays();
     test_eval_exec_array_def_and_eval();
     test_eval_exec_array_nested_def_and_eval();
+
+    test_eval_exec_op();
 
     printf("%s: OK\n", __func__);
 }

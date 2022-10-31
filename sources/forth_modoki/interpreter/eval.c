@@ -127,6 +127,12 @@ static void roll_op(void) {
     free(elems);
 }
 
+static void exec_op(void) {
+    struct Element *e = stack_pop();
+    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    eval_exec_array(e->u.byte_code);
+}
+
 static void register_primitives(void) {
     dict_put("add", new_cfunc_element(add_op));
     dict_put("sub", new_cfunc_element(sub_op));
@@ -147,6 +153,8 @@ static void register_primitives(void) {
     dict_put("dup", new_cfunc_element(dup_op));
     dict_put("index", new_cfunc_element(index_op));
     dict_put("roll", new_cfunc_element(roll_op));
+
+    dict_put("exec", new_cfunc_element(exec_op));
 }
 
 static struct Token **_tokens;
