@@ -297,6 +297,22 @@ static void test_eval_nested_exec_arrays(void) {
     assert(ea->elem[2]->u.number == 33);
 }
 
+static void test_eval_nested_exec_arrays_exec(void) {
+    char *input = "{11 {22} 33} exec";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_pop()->u.number == 33);
+
+    struct Element *e = stack_pop();
+    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    assert(e->u.byte_code->len == 1);
+    assert(e->u.byte_code->elem[0]->u.number == 22);
+
+    assert(stack_pop()->u.number == 11);
+}
+
 static void test_eval_exec_array_def_and_eval(void) {
     char *input = "/plusone { 1 add } def 100 plusone";
     int expect = 101;
@@ -406,6 +422,7 @@ void test_eval(void) {
     test_eval_exec_array_multi_nums();
     test_eval_multi_exec_arrays();
     test_eval_nested_exec_arrays();
+    test_eval_nested_exec_arrays_exec();
     test_eval_exec_array_def_and_eval();
     test_eval_exec_array_nested_def_and_eval();
 
