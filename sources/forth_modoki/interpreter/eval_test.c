@@ -351,6 +351,24 @@ static void test_eval_if_op_false(void) {
     assert(stack_is_empty());
 }
 
+static void test_eval_ifelse_op_then(void) {
+    char *input = "10 1 {1 add} {2 add} ifelse";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(11 == stack_pop()->u.number);
+}
+
+static void test_eval_ifelse_op_else(void) {
+    char *input = "10 0 {1 add} {2 add} ifelse";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(12 == stack_pop()->u.number);
+}
+
 void test_eval(void) {
     test_eval_num_one();
     test_eval_num_two();
@@ -385,6 +403,8 @@ void test_eval(void) {
     test_eval_exec_op();
     test_eval_if_op_true();
     test_eval_if_op_false();
+    test_eval_ifelse_op_then();
+    test_eval_ifelse_op_else();
 
     printf("%s: OK\n", __func__);
 }
