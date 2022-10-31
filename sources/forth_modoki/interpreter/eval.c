@@ -129,7 +129,8 @@ static void roll_op(void) {
 
 static void exec_op(void) {
     struct Element *e = stack_pop();
-    assert(e->etype == ELEM_EXECUTABLE_ARRAY);
+    expect(e->etype == ELEM_EXECUTABLE_ARRAY,
+           "Exec op works on executable array only.");
     eval_exec_array(e->u.byte_code);
 }
 
