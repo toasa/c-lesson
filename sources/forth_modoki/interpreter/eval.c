@@ -134,6 +134,13 @@ static void exec_op(void) {
     eval_exec_array(e->u.byte_code);
 }
 
+static void if_op(void) {
+    struct Element *proc = stack_pop();
+    struct Element *cond = stack_pop();
+    if (cond->u.number)
+        eval_elem(proc);
+}
+
 static void register_primitives(void) {
     dict_put("add", new_cfunc_element(add_op));
     dict_put("sub", new_cfunc_element(sub_op));
@@ -156,6 +163,7 @@ static void register_primitives(void) {
     dict_put("roll", new_cfunc_element(roll_op));
 
     dict_put("exec", new_cfunc_element(exec_op));
+    dict_put("if", new_cfunc_element(if_op));
 }
 
 static struct Token **_tokens;
