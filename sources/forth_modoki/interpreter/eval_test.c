@@ -394,6 +394,16 @@ static void test_eval_repeat_op(void) {
     assert(1024 == stack_pop()->u.number);
 }
 
+static void test_eval_while_op(void) {
+    char *input = "/factorial { dup {dup 1 gt} { 1 sub exch 1 index mul exch } "
+                  "while pop } def 6 factorial";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(720 == stack_pop()->u.number);
+}
+
 void test_eval(void) {
     test_eval_num_one();
     test_eval_num_two();
@@ -432,6 +442,7 @@ void test_eval(void) {
     test_eval_ifelse_op_then();
     test_eval_ifelse_op_else();
     test_eval_repeat_op();
+    test_eval_while_op();
 
     printf("%s: OK\n", __func__);
 }
