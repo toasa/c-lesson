@@ -369,6 +369,15 @@ static void test_eval_ifelse_op_else(void) {
     assert(12 == stack_pop()->u.number);
 }
 
+static void test_eval_repeat_op(void) {
+    char *input = "1 10 {2 mul} repeat";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(1024 == stack_pop()->u.number);
+}
+
 void test_eval(void) {
     test_eval_num_one();
     test_eval_num_two();
@@ -405,6 +414,7 @@ void test_eval(void) {
     test_eval_if_op_false();
     test_eval_ifelse_op_then();
     test_eval_ifelse_op_else();
+    test_eval_repeat_op();
 
     printf("%s: OK\n", __func__);
 }
