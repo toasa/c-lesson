@@ -1,6 +1,6 @@
 #include "clesson.h"
 
-static void eval_elem(struct Element *e);
+static void eval_elem(struct Element *e, bool on_exec_arr_elems);
 static void eval_exec_name(const char *name);
 static void eval_exec_array(struct ElementArray *elems);
 
@@ -138,7 +138,7 @@ static void if_op(void) {
     struct Element *proc = stack_pop();
     struct Element *cond = stack_pop();
     if (cond->u.number)
-        eval_elem(proc);
+        eval_elem(proc, false);
 }
 
 static void ifelse_op(void) {
@@ -146,9 +146,9 @@ static void ifelse_op(void) {
     struct Element *proc_then = stack_pop();
     struct Element *cond = stack_pop();
     if (cond->u.number)
-        eval_elem(proc_then);
+        eval_elem(proc_then, false);
     else
-        eval_elem(proc_else);
+        eval_elem(proc_else, false);
 }
 
 static void repeat_op(void) {
@@ -156,7 +156,7 @@ static void repeat_op(void) {
     struct Element *n = stack_pop();
 
     for (int i = 0; i < n->u.number; i++)
-        eval_elem(proc);
+        eval_elem(proc, false);
 }
 
 static void register_primitives(void) {
@@ -253,10 +253,10 @@ static void eval_exec_name(const char *name) {
         abort();
     }
 
-    eval_elem(e);
+    eval_elem(e, false);
 }
 
-static void eval_elem(struct Element *e) {
+static void eval_elem(struct Element *e, bool on_exec_arr_elems) {
     switch (e->etype) {
     case ELEM_NUMBER:
     case ELEM_LITERAL_NAME:
@@ -269,7 +269,10 @@ static void eval_elem(struct Element *e) {
         e->u.cfunc();
         break;
     case ELEM_EXECUTABLE_ARRAY:
-        eval_exec_array(e->u.byte_code);
+        if (!on_exec_arr_elems)
+            eval_exec_array(e->u.byte_code);
+        else
+            stack_push(e);
         break;
     default:
         abort();
@@ -278,7 +281,7 @@ static void eval_elem(struct Element *e) {
 
 static void eval_exec_array(struct ElementArray *elems) {
     for (int i = 0; i < elems->len; i++)
-        eval_elem(elems->elem[i]);
+        eval_elem(elems->elem[i], true);
 }
 
 void eval(struct Token *tokens[]) {
