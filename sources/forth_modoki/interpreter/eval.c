@@ -1,5 +1,9 @@
 #include "clesson.h"
 
+static void eval_elem(struct Element *e);
+static void eval_exec_name(const char *name);
+static void eval_exec_array(struct ElementArray *elems);
+
 static void add_op(void) {
     struct Element *rhs = stack_pop();
     struct Element *lhs = stack_pop();
@@ -203,10 +207,6 @@ succuess:
 
     return new_exec_array_element(ea);
 }
-
-static void eval_elem(struct Element *e);
-static void eval_exec_name(const char *name);
-static void eval_exec_array(struct ElementArray *elems);
 
 static void eval_exec_name(const char *name) {
     struct Element *e = dict_get(name);
