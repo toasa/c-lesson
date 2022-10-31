@@ -331,6 +331,26 @@ static void test_eval_exec_op(void) {
     assert(expect == actual);
 }
 
+static void test_eval_if_op_true(void) {
+    char *input = "1 {10 20 add} if";
+    int expect = 10 + 20;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
+static void test_eval_if_op_false(void) {
+    char *input = "0 {10 20 add} if";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_is_empty());
+}
+
 void test_eval(void) {
     test_eval_num_one();
     test_eval_num_two();
@@ -363,6 +383,8 @@ void test_eval(void) {
     test_eval_exec_array_nested_def_and_eval();
 
     test_eval_exec_op();
+    test_eval_if_op_true();
+    test_eval_if_op_false();
 
     printf("%s: OK\n", __func__);
 }
