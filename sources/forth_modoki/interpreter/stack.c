@@ -17,6 +17,8 @@ struct Element *stack_pop(void) {
     return stack[head];
 };
 
+void stack_init(void) { head = 0; }
+
 bool stack_is_empty(void) { return head == 0; }
 
 void stack_print_all(void) {
