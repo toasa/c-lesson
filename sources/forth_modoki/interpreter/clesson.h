@@ -97,6 +97,7 @@ void test_dict(void);
 
 void stack_push(struct Element *e);
 struct Element *stack_pop(void);
+void stack_init(void);
 bool stack_is_empty(void);
 void stack_print_all(void);
 void test_stack(void);

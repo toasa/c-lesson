@@ -164,6 +164,7 @@ static int pos = 0;
 static void _init(struct Token **tokens) {
     _tokens = tokens;
     pos = 0;
+    stack_init();
     register_primitives();
 }
 
