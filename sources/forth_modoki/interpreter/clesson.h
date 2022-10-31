@@ -12,19 +12,19 @@
 // token.c
 //
 
-enum LexicalType {
-    NUMBER,
-    SPACE,
-    EXECUTABLE_NAME,
-    LITERAL_NAME,
-    OPEN_CURLY,
-    CLOSE_CURLY,
-    END_OF_FILE,
-    UNKNOWN,
+enum TokenType {
+    TK_NUMBER,
+    TK_SPACE,
+    TK_EXECUTABLE_NAME,
+    TK_LITERAL_NAME,
+    TK_OPEN_CURLY,
+    TK_CLOSE_CURLY,
+    TK_END_OF_FILE,
+    TK_UNKNOWN,
 };
 
 struct Token {
-    enum LexicalType ltype;
+    enum TokenType ty;
     union {
         int number;
         char onechar;
@@ -36,7 +36,7 @@ struct Token **tokenize(const char *input);
 void token_print(struct Token *t);
 void test_tokenize(void);
 
-struct Token *new_token(enum LexicalType ty);
+struct Token *new_token(enum TokenType ty);
 struct Token *new_num_token(int val);
 struct Token *new_literal_token(char *name);
 
@@ -65,7 +65,7 @@ struct ElementArray {
 };
 
 struct Element {
-    enum ElementType etype;
+    enum ElementType ty;
     union {
         int number;
         char *name;

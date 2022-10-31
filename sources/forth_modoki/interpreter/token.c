@@ -29,7 +29,7 @@ struct Token **tokenize(const char *input) {
             } while (isdigit(c));
             _back();
 
-            tokens[len] = new_token(NUMBER);
+            tokens[len] = new_token(TK_NUMBER);
             tokens[len]->u.number = n;
         } else if (isspace(c)) {
             // Parse space and skip multiple white space.
@@ -37,7 +37,7 @@ struct Token **tokenize(const char *input) {
                 ;
             _back();
 
-            tokens[len] = new_token(SPACE);
+            tokens[len] = new_token(TK_SPACE);
         } else if (isalpha(c) || c == '/') {
             // Parse executable or literal name.
             bool is_literal = (c == '/');
@@ -50,63 +50,63 @@ struct Token **tokenize(const char *input) {
             _back();
 
             tokens[len] =
-                new_token(is_literal ? LITERAL_NAME : EXECUTABLE_NAME);
+                new_token(is_literal ? TK_LITERAL_NAME : TK_EXECUTABLE_NAME);
             tokens[len]->u.name = name;
         } else if (c == '{') {
-            tokens[len] = new_token(OPEN_CURLY);
+            tokens[len] = new_token(TK_OPEN_CURLY);
             tokens[len]->u.onechar = c;
         } else if (c == '}') {
-            tokens[len] = new_token(CLOSE_CURLY);
+            tokens[len] = new_token(TK_CLOSE_CURLY);
             tokens[len]->u.onechar = c;
         }
 
         len++;
     }
 
-    tokens[len] = new_token(END_OF_FILE);
+    tokens[len] = new_token(TK_END_OF_FILE);
     return tokens;
 }
 
 void token_print(struct Token *t) {
-    switch (t->ltype) {
-    case NUMBER:
+    switch (t->ty) {
+    case TK_NUMBER:
         printf("num: %d\n", t->u.number);
         break;
-    case SPACE:
+    case TK_SPACE:
         printf("space!\n");
         break;
-    case OPEN_CURLY:
+    case TK_OPEN_CURLY:
         printf("Open curly brace '%c'\n", t->u.onechar);
         break;
-    case CLOSE_CURLY:
+    case TK_CLOSE_CURLY:
         printf("Close curly brace '%c'\n", t->u.onechar);
         break;
-    case EXECUTABLE_NAME:
+    case TK_EXECUTABLE_NAME:
         printf("EXECUTABLE_NAME: %s\n", t->u.name);
         break;
-    case LITERAL_NAME:
+    case TK_LITERAL_NAME:
         printf("LITERAL_NAME: %s\n", t->u.name);
         break;
     default:
-        printf("Unknown type %d\n", t->ltype);
+        printf("Unknown type %d\n", t->ty);
         break;
     }
 }
 
-struct Token *new_token(enum LexicalType ty) {
+struct Token *new_token(enum TokenType ty) {
     struct Token *t = calloc(1, sizeof(struct Token));
-    t->ltype = ty;
+    t->ty = ty;
     return t;
 }
 
 struct Token *new_num_token(int val) {
-    struct Token *t = new_token(NUMBER);
+    struct Token *t = new_token(TK_NUMBER);
     t->u.number = val;
     return t;
 }
 
 struct Token *new_literal_token(char *name) {
-    struct Token *t = new_token(LITERAL_NAME);
+    struct Token *t = new_token(TK_LITERAL_NAME);
     t->u.name = name;
     return t;
 }
