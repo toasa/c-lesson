@@ -1,6 +1,6 @@
 #include "clesson.h"
 
-static void eval_elem(struct Element *e, bool on_exec_arr_elems);
+static void eval_elem(struct Element *e);
 static void eval_exec_name(const char *name);
 static void eval_exec_array(struct ElementArray *elems);
 
@@ -130,43 +130,61 @@ static void roll_op(void) {
 static void exec_op(void) {
     struct Element *e = stack_pop();
     expect(e->ty == ELEM_EXECUTABLE_ARRAY,
-           "Exec op works on executable array only.");
+           "exec's operand must be  executable array.");
     eval_exec_array(e->u.byte_code);
 }
 
 static void if_op(void) {
     struct Element *proc = stack_pop();
     struct Element *cond = stack_pop();
+
+    expect(proc->ty == ELEM_EXECUTABLE_ARRAY,
+           "if op's body must be executable array.");
+
     if (cond->u.number)
-        eval_elem(proc, false);
+        eval_exec_array(proc->u.byte_code);
 }
 
 static void ifelse_op(void) {
     struct Element *proc_else = stack_pop();
     struct Element *proc_then = stack_pop();
     struct Element *cond = stack_pop();
+
+    expect(proc_then->ty == ELEM_EXECUTABLE_ARRAY,
+           "ifelse op's then body must be executable array.");
+    expect(proc_else->ty == ELEM_EXECUTABLE_ARRAY,
+           "ifelse op's else body must be executable array.");
+
     if (cond->u.number)
-        eval_elem(proc_then, false);
+        eval_exec_array(proc_then->u.byte_code);
     else
-        eval_elem(proc_else, false);
+        eval_exec_array(proc_else->u.byte_code);
 }
 
 static void repeat_op(void) {
     struct Element *proc = stack_pop();
     struct Element *n = stack_pop();
 
+    expect(proc->ty == ELEM_EXECUTABLE_ARRAY,
+           "repeat op's body must be executable array.");
+
     for (int i = 0; i < n->u.number; i++)
-        eval_elem(proc, false);
+        eval_exec_array(proc->u.byte_code);
 }
 
 static void while_op(void) {
     struct Element *body_proc = stack_pop();
     struct Element *cond_proc = stack_pop();
 
+    expect(body_proc->ty == ELEM_EXECUTABLE_ARRAY,
+           "while op's body must be executable array.");
+    expect(cond_proc->ty == ELEM_EXECUTABLE_ARRAY,
+           "while op's cond must be executable array.");
+
     while (1) {
-        eval_elem(cond_proc, false);
+        eval_exec_array(cond_proc->u.byte_code);
         if (stack_pop()->u.number)
-            eval_elem(body_proc, false);
+            eval_exec_array(body_proc->u.byte_code);
         else
             break;
     }
@@ -267,13 +285,17 @@ static void eval_exec_name(const char *name) {
         abort();
     }
 
-    eval_elem(e, false);
+    if (e->ty == ELEM_EXECUTABLE_ARRAY)
+        eval_exec_array(e->u.byte_code);
+    else
+        eval_elem(e);
 }
 
-static void eval_elem(struct Element *e, bool on_exec_arr_elems) {
+static void eval_elem(struct Element *e) {
     switch (e->ty) {
     case ELEM_NUMBER:
     case ELEM_LITERAL_NAME:
+    case ELEM_EXECUTABLE_ARRAY:
         stack_push(e);
         break;
     case ELEM_EXECUTABLE_NAME:
@@ -282,12 +304,6 @@ static void eval_elem(struct Element *e, bool on_exec_arr_elems) {
     case ELEM_C_FUNC:
         e->u.cfunc();
         break;
-    case ELEM_EXECUTABLE_ARRAY:
-        if (!on_exec_arr_elems)
-            eval_exec_array(e->u.byte_code);
-        else
-            stack_push(e);
-        break;
     default:
         abort();
     }
@@ -295,7 +311,7 @@ static void eval_elem(struct Element *e, bool on_exec_arr_elems) {
 
 static void eval_exec_array(struct ElementArray *elems) {
     for (int i = 0; i < elems->len; i++)
-        eval_elem(elems->elem[i], true);
+        eval_elem(elems->elem[i]);
 }
 
 void eval(struct Token *tokens[]) {
