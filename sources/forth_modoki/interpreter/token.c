@@ -20,6 +20,14 @@ struct Token **tokenize(const char *input) {
 
     int len = 0;
     for (char c = _getc(); c != '\0'; c = _getc()) {
+        // Skip white space
+        if (isspace(c)) {
+            while ((c = _getc()) != '\0' && isspace(c))
+                ;
+            _back();
+            continue;
+        }
+
         if (isdigit(c)) {
             // Parse Integer
             int n = 0;
@@ -31,13 +39,6 @@ struct Token **tokenize(const char *input) {
 
             tokens[len] = new_token(TK_NUMBER);
             tokens[len]->u.number = n;
-        } else if (isspace(c)) {
-            // Parse space and skip multiple white space.
-            while ((c = _getc()) != '\0' && isspace(c))
-                ;
-            _back();
-
-            tokens[len] = new_token(TK_SPACE);
         } else if (isalpha(c) || c == '/') {
             // Parse executable or literal name.
             bool is_literal = (c == '/');
@@ -71,9 +72,6 @@ void token_print(struct Token *t) {
     switch (t->ty) {
     case TK_NUMBER:
         printf("num: %d\n", t->u.number);
-        break;
-    case TK_SPACE:
-        printf("space!\n");
         break;
     case TK_OPEN_CURLY:
         printf("Open curly brace '%c'\n", t->u.onechar);
