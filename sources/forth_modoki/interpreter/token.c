@@ -22,7 +22,7 @@ struct Token **tokenize(const char *input) {
 
     int len = 0;
     for (char c = _getc(); c != '\0'; c = _getc()) {
-        // Skip white space
+        // Skip white space and newline.
         if (isspace(c) || isnewline(c)) {
             while ((c = _getc()) != '\0' && (isspace(c) || isnewline(c)))
                 ;
@@ -30,7 +30,7 @@ struct Token **tokenize(const char *input) {
             continue;
         }
 
-        // Skip comment
+        // Skip comment.
         if (c == '%') {
             while ((c = _getc()) != '\0' && c != '\n')
                 ;
@@ -39,7 +39,7 @@ struct Token **tokenize(const char *input) {
         }
 
         if (isdigit(c)) {
-            // Parse Integer
+            // Parse Integer.
             int n = 0;
             do {
                 n = 10 * n + (c - '0');
