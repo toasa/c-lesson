@@ -61,6 +61,13 @@ static void test_tokenize_multi_tokens(void) {
     assert_int_eq(tokens[4]->ty, TK_CLOSE_CURLY);
 }
 
+static void test_tokenize_skip_space(void) {
+    char *input = " ";
+    struct Token **tokens = tokenize(input);
+
+    assert_int_eq(tokens[0]->ty, TK_END_OF_FILE);
+}
+
 static void test_tokenize_skip_newline(void) {
     char *input = "\n";
     struct Token **tokens = tokenize(input);
@@ -85,6 +92,7 @@ void test_tokenize(void) {
     test_tokenize_one_open_curly();
     test_tokenize_one_close_curly();
     test_tokenize_multi_tokens();
+    test_tokenize_skip_space();
     test_tokenize_skip_newline();
     test_tokenize_skip_end_of_newline();
 
