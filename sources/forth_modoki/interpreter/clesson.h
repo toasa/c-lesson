@@ -14,7 +14,6 @@
 
 enum TokenType {
     TK_NUMBER,
-    TK_SPACE,
     TK_EXECUTABLE_NAME,
     TK_LITERAL_NAME,
     TK_OPEN_CURLY,
