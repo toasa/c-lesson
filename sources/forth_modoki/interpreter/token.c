@@ -15,14 +15,16 @@ static void _init(const char *input) {
     pos = 0;
 }
 
+static bool isnewline(char c) { return c == '\n'; }
+
 struct Token **tokenize(const char *input) {
     _init(input);
 
     int len = 0;
     for (char c = _getc(); c != '\0'; c = _getc()) {
         // Skip white space
-        if (isspace(c)) {
-            while ((c = _getc()) != '\0' && isspace(c))
+        if (isspace(c) || isnewline(c)) {
+            while ((c = _getc()) != '\0' && (isspace(c) || isnewline(c)))
                 ;
             _back();
             continue;
