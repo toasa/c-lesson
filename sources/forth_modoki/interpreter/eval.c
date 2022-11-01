@@ -218,24 +218,23 @@ static void register_primitives(void) {
     dict_put("while", new_cfunc_element(while_op));
 }
 
-static struct Token **_tokens;
-static int pos = 0;
+// Index of the token sequence currently being read.
+static int tok_pos = 0;
 
-static void _init(struct Token **tokens) {
-    _tokens = tokens;
-    pos = 0;
+static void _init(void) {
+    tok_pos = 0;
     stack_init();
     register_primitives();
 }
 
-static struct Element *compile_exec_array(void) {
+static struct Element *compile_exec_array(struct Token **tokens) {
     // Default capacity, expand when needed.
     int cap = 10;
     struct Element **elems = calloc(1, sizeof(struct Element) * cap);
 
     int len = 0;
-    for (; _tokens[pos]->ty != TK_END_OF_FILE; pos++) {
-        struct Token *t = _tokens[pos];
+    for (; tokens[tok_pos]->ty != TK_END_OF_FILE; tok_pos++) {
+        struct Token *t = tokens[tok_pos];
 
         switch (t->ty) {
         case TK_NUMBER:
@@ -248,8 +247,8 @@ static struct Element *compile_exec_array(void) {
             elems[len++] = new_lit_name_element(t->u.name);
             break;
         case TK_OPEN_CURLY:
-            pos++;
-            elems[len++] = compile_exec_array();
+            tok_pos++;
+            elems[len++] = compile_exec_array(tokens);
             break;
         case TK_CLOSE_CURLY:
             goto succuess;
@@ -315,10 +314,10 @@ static void eval_exec_array(struct ElementArray *elems) {
 }
 
 void eval(struct Token *tokens[]) {
-    _init(tokens);
+    _init();
 
-    for (; _tokens[pos]->ty != TK_END_OF_FILE; pos++) {
-        struct Token *t = _tokens[pos];
+    for (; tokens[tok_pos]->ty != TK_END_OF_FILE; tok_pos++) {
+        struct Token *t = tokens[tok_pos];
         switch (t->ty) {
         case TK_NUMBER:
             stack_push(new_num_element(t->u.number));
@@ -330,8 +329,8 @@ void eval(struct Token *tokens[]) {
             stack_push(new_lit_name_element(t->u.name));
             break;
         case TK_OPEN_CURLY:
-            pos++;
-            stack_push(compile_exec_array());
+            tok_pos++;
+            stack_push(compile_exec_array(tokens));
             break;
         default:
             break;
