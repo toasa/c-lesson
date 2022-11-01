@@ -61,6 +61,22 @@ static void test_tokenize_multi_tokens(void) {
     assert_int_eq(tokens[4]->ty, TK_CLOSE_CURLY);
 }
 
+static void test_tokenize_skip_newline(void) {
+    char *input = "\n";
+    struct Token **tokens = tokenize(input);
+
+    assert_int_eq(tokens[0]->ty, TK_END_OF_FILE);
+}
+
+static void test_tokenize_skip_end_of_newline(void) {
+    char *input = "123\n";
+    struct Token **tokens = tokenize(input);
+
+    assert_int_eq(tokens[0]->ty, TK_NUMBER);
+    assert_int_eq(tokens[0]->u.number, 123);
+    assert_int_eq(tokens[1]->ty, TK_END_OF_FILE);
+}
+
 void test_tokenize(void) {
     test_tokenize_empty_string();
     test_tokenize_one_number();
@@ -69,6 +85,8 @@ void test_tokenize(void) {
     test_tokenize_one_open_curly();
     test_tokenize_one_close_curly();
     test_tokenize_multi_tokens();
+    test_tokenize_skip_newline();
+    test_tokenize_skip_end_of_newline();
 
     printf("%s: OK\n", __func__);
 }
