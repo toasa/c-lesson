@@ -30,6 +30,14 @@ struct Token **tokenize(const char *input) {
             continue;
         }
 
+        // Skip comment
+        if (c == '%') {
+            while ((c = _getc()) != '\0' && c != '\n')
+                ;
+            _back();
+            continue;
+        }
+
         if (isdigit(c)) {
             // Parse Integer
             int n = 0;

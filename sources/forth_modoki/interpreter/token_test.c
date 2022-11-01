@@ -84,6 +84,15 @@ static void test_tokenize_skip_end_of_newline(void) {
     assert_int_eq(tokens[1]->ty, TK_END_OF_FILE);
 }
 
+static void test_tokenize_skip_comment(void) {
+    char *input = "%sThis is comment\n123";
+    struct Token **tokens = tokenize(input);
+
+    assert_int_eq(tokens[0]->ty, TK_NUMBER);
+    assert_int_eq(tokens[0]->u.number, 123);
+    assert_int_eq(tokens[1]->ty, TK_END_OF_FILE);
+}
+
 void test_tokenize(void) {
     test_tokenize_empty_string();
     test_tokenize_one_number();
@@ -95,6 +104,7 @@ void test_tokenize(void) {
     test_tokenize_skip_space();
     test_tokenize_skip_newline();
     test_tokenize_skip_end_of_newline();
+    test_tokenize_skip_comment();
 
     printf("%s: OK\n", __func__);
 }
