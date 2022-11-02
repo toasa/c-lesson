@@ -3,7 +3,7 @@
 #define STACK_SIZE 1024
 
 static struct Element *stack[STACK_SIZE];
-static unsigned head = 0;
+static int head = 0;
 
 void stack_push(struct Element *e) {
     stack[head] = e;
@@ -22,6 +22,6 @@ void stack_init(void) { head = 0; }
 bool stack_is_empty(void) { return head == 0; }
 
 void stack_print_all(void) {
-    for (unsigned i = 0; i < head; i++)
+    for (int i = head - 1; i >= 0; i--)
         element_print(stack[i]);
 }
