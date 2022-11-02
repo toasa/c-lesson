@@ -1,0 +1,23 @@
+% 1^2 + 2^2 + 3^2 + ... + n^2 を計算する
+% 使い方: n sum_k2
+/sum_k2 {
+    /i 1 def
+    /res 0 def
+
+    {
+        /res
+        i dup mul
+        res add
+        def
+
+        /i
+        i 1 add
+        def
+
+    } repeat
+
+    res
+} def
+
+% expect 91
+6 sum_k2
