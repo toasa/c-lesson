@@ -31,6 +31,14 @@ static void test_tokenize_one_executable_name_with_underscore(void) {
     assert_str_eq(tokens[0]->u.name, "foo_bar");
 }
 
+static void test_tokenize_one_executable_name_with_number(void) {
+    char *input = "foo2";
+    struct Token **tokens = tokenize(input);
+
+    assert_int_eq(tokens[0]->ty, TK_EXECUTABLE_NAME);
+    assert_str_eq(tokens[0]->u.name, "foo2");
+}
+
 static void test_tokenize_one_literal_name(void) {
     char *input = "/add";
     struct Token **tokens = tokenize(input);
@@ -106,6 +114,7 @@ void test_tokenize(void) {
     test_tokenize_one_number();
     test_tokenize_one_executable_name();
     test_tokenize_one_executable_name_with_underscore();
+    test_tokenize_one_executable_name_with_number();
     test_tokenize_one_literal_name();
     test_tokenize_one_open_curly();
     test_tokenize_one_close_curly();
