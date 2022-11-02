@@ -1,0 +1,27 @@
+% 1から引数に指定された数 `n` までの和を求めるプログラム。
+% stack に中間結果 `res` とイテレーション数 `i` を保存して、和を計算する。
+% 使い方: n sum_k
+
+/sum_k {
+    % Initial value of `res` and `i`
+    0 1
+    % move `n` to the top of stack
+    3 2 roll
+
+    % repeat `n` times
+    {
+        % `res += i`
+        dup
+        3 1 roll
+        add
+        exch
+
+        % `i++`
+        1 add
+    } repeat
+
+    % discard `i`
+    pop
+} def
+
+10 sum_k
