@@ -41,16 +41,38 @@ struct Element *copy_element(struct Element *e) {
     return new;
 }
 
-void element_print(struct Element *e) {
+static void _element_print(struct Element *e, bool newline) {
     switch (e->ty) {
     case ELEM_NUMBER:
-        printf("num: %d\n", e->u.number);
+        printf("Number: %d", e->u.number);
         break;
     case ELEM_LITERAL_NAME:
-        printf("LITERAL NAME: %s\n", e->u.name);
+        printf("Lit name: %s", e->u.name);
         break;
-    default:
-        printf("Unknown type %d\n", e->ty);
+    case ELEM_EXECUTABLE_NAME:
+        printf("Exec name: %s", e->u.name);
+        break;
+    case ELEM_C_FUNC:
+        printf("C Func");
+        break;
+    case ELEM_EXECUTABLE_ARRAY: {
+        printf("Exec arr: {");
+        struct ElementArray *ea = e->u.byte_code;
+        for (int i = 0; i < ea->len; i++) {
+            _element_print(ea->elem[i], false);
+            if (i + 1 != ea->len)
+                printf(" ");
+        }
+        printf("}");
         break;
     }
+    default:
+        printf("Unknown type %d", e->ty);
+        break;
+    }
+
+    if (newline)
+        printf("\n");
 }
+
+void element_print(struct Element *e) { _element_print(e, true); }
