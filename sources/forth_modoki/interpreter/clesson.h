@@ -110,4 +110,10 @@ void assert_int_eq(int x, int y);
 void assert_str_eq(const char *s1, const char *s2);
 void expect(bool b, const char *fmt, ...);
 
+//
+// test.c
+//
+
+void do_unittests(void);
+
 #endif
