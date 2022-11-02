@@ -49,14 +49,14 @@ struct Token **tokenize(const char *input) {
 
             tokens[len] = new_token(TK_NUMBER);
             tokens[len]->u.number = n;
-        } else if (isalpha(c) || c == '/') {
+        } else if (isalpha(c) || c == '_' || c == '/') {
             // Parse executable or literal name.
             bool is_literal = (c == '/');
             if (is_literal)
                 c = _getc();
 
             char *name = calloc(1, NAME_SIZE);
-            for (int i = 0; isalpha(c); i++, c = _getc())
+            for (int i = 0; isalpha(c) || c == '_'; i++, c = _getc())
                 name[i] = c;
             _back();
 
