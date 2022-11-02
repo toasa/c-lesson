@@ -1,0 +1,33 @@
+/fibo {
+    /n exch def
+    
+    {n 2 lt} exec
+    {
+        {n 1 lt} exec
+        {0}
+        {1}
+        ifelse
+    }
+    {
+        % Initial value
+        /pprev 0 def
+        /prev 1 def
+
+        {n 1 sub} exec
+        {
+            % Calculate nth
+            pprev prev add
+
+            % Update
+            /pprev prev def
+            /prev exch def
+
+        } repeat
+
+        prev
+        
+    } ifelse
+} def
+
+% expect 144
+12 fibo
