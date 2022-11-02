@@ -56,7 +56,8 @@ struct Token **tokenize(const char *input) {
                 c = _getc();
 
             char *name = calloc(1, NAME_SIZE);
-            for (int i = 0; isalpha(c) || c == '_'; i++, c = _getc())
+            for (int i = 0; isalpha(c) || isdigit(c) || c == '_';
+                 i++, c = _getc())
                 name[i] = c;
             _back();
 
