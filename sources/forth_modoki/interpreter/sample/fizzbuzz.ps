@@ -1,0 +1,33 @@
+/FizzBuzz {
+    /n exch def
+    /i 1 def
+
+    {i n le}
+    {
+        {{i 15 mod} exec 0 eq} exec
+        {
+            /FizzBuzz
+        }
+        {
+            {{i 3 mod} exec 0 eq} exec
+            {
+                /Fizz
+            }
+            {
+                {{i 5 mod} exec 0 eq} exec
+                {
+                    /Buzz
+                }
+                {
+                    i
+                } ifelse
+            } ifelse
+        } ifelse
+
+        /i
+        i 1 add
+        def
+    } while
+} def
+
+15 FizzBuzz
