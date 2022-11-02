@@ -71,6 +71,17 @@ static void test_eval_num_div(void) {
     assert(expect == actual);
 }
 
+static void test_eval_num_mod(void) {
+    char *input = "11 7 mod";
+    int expect = 4;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
 static void test_eval_num_add_one_to_nine() {
     char *input = "1 2 3 add add 4 5 6 7 8 9 add add add add add add";
     int expect = 45;
@@ -411,6 +422,7 @@ void test_eval(void) {
     test_eval_num_sub();
     test_eval_num_mul();
     test_eval_num_div();
+    test_eval_num_mod();
     test_eval_num_add_one_to_nine();
     test_eval_variable();
 

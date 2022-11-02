@@ -28,6 +28,12 @@ static void div_op(void) {
     stack_push(new_num_element(lhs->u.number / rhs->u.number));
 }
 
+static void mod_op(void) {
+    struct Element *rhs = stack_pop();
+    struct Element *lhs = stack_pop();
+    stack_push(new_num_element(lhs->u.number % rhs->u.number));
+}
+
 static void eq_op(void) {
     struct Element *rhs = stack_pop();
     struct Element *lhs = stack_pop();
@@ -195,6 +201,7 @@ static void register_primitives(void) {
     dict_put("sub", new_cfunc_element(sub_op));
     dict_put("mul", new_cfunc_element(mul_op));
     dict_put("div", new_cfunc_element(div_op));
+    dict_put("mod", new_cfunc_element(mod_op));
 
     dict_put("eq", new_cfunc_element(eq_op));
     dict_put("neq", new_cfunc_element(neq_op));
