@@ -1,0 +1,25 @@
+% repeatをwhileを使って実装する。
+/repeat {
+    /ntimes
+    3 2 roll
+    def
+
+    /repeat_body
+    exch
+    def
+
+    /repeat_count 0 def
+
+    {repeat_count ntimes lt}
+    {
+        % Increment `repeat_count`
+        /repeat_count
+        repeat_count 1 add
+        def
+
+        repeat_body
+
+    } while
+} def
+
+3 {1 2} repeat
