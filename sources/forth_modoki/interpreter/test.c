@@ -1,6 +1,6 @@
 #include "clesson.h"
 
-int main() {
+void do_unittests(void) {
     test_tokenize();
     test_stack();
     test_dict();
