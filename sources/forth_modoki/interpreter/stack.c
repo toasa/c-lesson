@@ -6,6 +6,7 @@ static struct Element *stack[STACK_SIZE];
 static int head = 0;
 
 void stack_push(struct Element *e) {
+    expect(head < STACK_SIZE, "Stack overflow");
     stack[head] = e;
     head++;
 }
