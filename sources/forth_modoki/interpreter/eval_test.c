@@ -335,6 +335,16 @@ static void test_eval_exec_array_def_and_eval(void) {
     assert(expect == actual);
 }
 
+static void test_eval_exec_array_nested_def_following(void) {
+    char *input = "/f { {1 3 add} exec 3} def f";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(3 == stack_pop()->u.number);
+    assert(4 == stack_pop()->u.number);
+}
+
 static void test_eval_exec_array_nested_def_and_eval(void) {
     char *input = "/ZZ {6} def /YY {4 ZZ 5} def /XX {1 2 YY 3} def XX mul add "
                   "mul add mul";
@@ -347,9 +357,31 @@ static void test_eval_exec_array_nested_def_and_eval(void) {
     assert(expect == actual);
 }
 
+static void test_eval_exec_array_imcomplete(void) {
+    char *input = "/a { {345} ifelse} def 1 {123} a";
+    int expect = 123;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
 static void test_eval_exec_op(void) {
     char *input = "{10 20 add} exec";
     int expect = 10 + 20;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
+static void test_eval_exec_op_nested(void) {
+    char *input = "{{10 20 add} exec 30 add } exec";
+    int expect = 10 + 20 + 30;
 
     struct Token **tokens = tokenize(input);
     eval(tokens);
@@ -378,8 +410,28 @@ static void test_eval_if_op_false(void) {
     assert(stack_is_empty());
 }
 
+static void test_eval_if_op_nested_following(void) {
+    char *input = "/b { 1 { 3 } if 2 } def /a {b 1} def a";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(1 == stack_pop()->u.number);
+    assert(2 == stack_pop()->u.number);
+    assert(3 == stack_pop()->u.number);
+}
+
 static void test_eval_ifelse_op_then(void) {
     char *input = "10 1 {1 add} {2 add} ifelse";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(11 == stack_pop()->u.number);
+}
+
+static void test_eval_ifelse_op_then_nested(void) {
+    char *input = "{10 1 {1 add} {2 add} ifelse} exec";
 
     struct Token **tokens = tokenize(input);
     eval(tokens);
@@ -396,12 +448,50 @@ static void test_eval_ifelse_op_else(void) {
     assert(12 == stack_pop()->u.number);
 }
 
+static void test_eval_ifelse_op_else_nested(void) {
+    char *input = "{10 0 {1 add} {2 add} ifelse} exec";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(12 == stack_pop()->u.number);
+}
+
+static void test_eval_ifelse_op_following(void) {
+    char *input = "1 {2} {3} ifelse 4";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(4 == stack_pop()->u.number);
+    assert(2 == stack_pop()->u.number);
+}
+
 static void test_eval_repeat_op(void) {
     char *input = "1 10 {2 mul} repeat";
 
     struct Token **tokens = tokenize(input);
     eval(tokens);
 
+    assert(1024 == stack_pop()->u.number);
+}
+
+static void test_eval_repeat_op_nested(void) {
+    char *input = "{1 10 {2 mul} repeat} exec";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(1024 == stack_pop()->u.number);
+}
+
+static void test_eval_repeat_op_following(void) {
+    char *input = "1 10 {2 mul} repeat 111";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(111 == stack_pop()->u.number);
     assert(1024 == stack_pop()->u.number);
 }
 
@@ -412,6 +502,28 @@ static void test_eval_while_op(void) {
     struct Token **tokens = tokenize(input);
     eval(tokens);
 
+    assert(720 == stack_pop()->u.number);
+}
+
+static void test_eval_while_op_nested(void) {
+    char *input =
+        "{/factorial { dup {dup 1 gt} { 1 sub exch 1 index mul exch } "
+        "while pop } def 6 factorial} exec";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(720 == stack_pop()->u.number);
+}
+
+static void test_eval_while_op_following(void) {
+    char *input = "/factorial { dup {dup 1 gt} { 1 sub exch 1 index mul exch } "
+                  "while pop } def 6 factorial 1024";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(1024 == stack_pop()->u.number);
     assert(720 == stack_pop()->u.number);
 }
 
@@ -446,15 +558,26 @@ void test_eval(void) {
     test_eval_nested_exec_arrays();
     test_eval_nested_exec_arrays_exec();
     test_eval_exec_array_def_and_eval();
+    test_eval_exec_array_nested_def_following();
     test_eval_exec_array_nested_def_and_eval();
+    test_eval_exec_array_imcomplete();
 
     test_eval_exec_op();
+    test_eval_exec_op_nested();
     test_eval_if_op_true();
     test_eval_if_op_false();
+    test_eval_if_op_nested_following();
     test_eval_ifelse_op_then();
+    test_eval_ifelse_op_then_nested();
     test_eval_ifelse_op_else();
+    test_eval_ifelse_op_else_nested();
+    test_eval_ifelse_op_following();
     test_eval_repeat_op();
+    test_eval_repeat_op_nested();
+    test_eval_repeat_op_following();
     test_eval_while_op();
+    test_eval_while_op_nested();
+    test_eval_while_op_following();
 
     printf("%s: OK\n", __func__);
 }
