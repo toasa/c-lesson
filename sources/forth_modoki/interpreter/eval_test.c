@@ -274,6 +274,16 @@ static void test_eval_exec_array_multi_nums(void) {
     assert(ea->elem[1]->u.number == 22);
 }
 
+static void test_eval_exec_array_exec(void) {
+    char *input = "{11 22} exec";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_pop()->u.number == 22);
+    assert(stack_pop()->u.number == 11);
+}
+
 static void test_eval_multi_exec_arrays(void) {
     char *input = "{11} {22}";
 
@@ -556,6 +566,7 @@ void test_eval(void) {
     test_eval_exec_array_multi_nums();
     test_eval_multi_exec_arrays();
     test_eval_nested_exec_arrays();
+    test_eval_exec_array_exec();
     test_eval_nested_exec_arrays_exec();
     test_eval_exec_array_def_and_eval();
     test_eval_exec_array_nested_def_following();
