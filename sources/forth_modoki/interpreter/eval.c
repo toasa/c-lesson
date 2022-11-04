@@ -316,8 +316,82 @@ static void eval_elem(struct Element *e) {
 }
 
 static void eval_exec_array(struct ElementArray *elems) {
-    for (int i = 0; i < elems->len; i++)
-        eval_elem(elems->elem[i]);
+    co_push(new_co(elems, 0));
+    while (!co_stack_empty()) {
+        struct Continuation *c = co_pop();
+        for (int i = c->pc; i < c->exec_array->len; i++) {
+            struct Element *e = c->exec_array->elem[i];
+            if (e->ty == ELEM_EXECUTABLE_NAME) {
+
+                struct Element *val = dict_get(e->u.name);
+                if (val == NULL) {
+                    fprintf(stderr, "Unbind variable: %s\n", e->u.name);
+                    abort();
+                }
+
+                if (val->ty == ELEM_EXECUTABLE_ARRAY) {
+                    co_push(new_co(c->exec_array, i + 1));
+                    co_push(new_co(val->u.byte_code, 0));
+                    break;
+                } else if (val->ty == ELEM_C_FUNC) {
+                    if (streq(e->u.name, "exec")) {
+                        struct Element *proc = stack_pop();
+                        co_push(new_co(c->exec_array, i + 1));
+                        co_push(new_co(proc->u.byte_code, 0));
+                        break;
+                    } else if (streq(e->u.name, "if")) {
+                        struct Element *proc = stack_pop();
+                        struct Element *cond = stack_pop();
+
+                        if (cond->u.number) {
+                            co_push(new_co(c->exec_array, i + 1));
+                            co_push(new_co(proc->u.byte_code, 0));
+                            break;
+                        }
+                    } else if (streq(e->u.name, "ifelse")) {
+                        struct Element *proc_else = stack_pop();
+                        struct Element *proc_then = stack_pop();
+                        struct Element *cond = stack_pop();
+
+                        co_push(new_co(c->exec_array, i + 1));
+
+                        if (cond->u.number)
+                            co_push(new_co(proc_then->u.byte_code, 0));
+                        else
+                            co_push(new_co(proc_else->u.byte_code, 0));
+                        break;
+                    } else if (streq(e->u.name, "repeat")) {
+                        struct Element *proc = stack_pop();
+                        struct Element *n = stack_pop();
+
+                        co_push(new_co(c->exec_array, i + 1));
+                        for (int i = 0; i < n->u.number; i++)
+                            co_push(new_co(proc->u.byte_code, 0));
+                        break;
+                        // } else if (streq(e->u.name, "while")) {
+                        //     struct Element *body_proc = stack_pop();
+                        //     struct Element *cond_proc = stack_pop();
+
+                        //     // TODO: ふーむ、、どうすべきか？
+                        //     //
+                        //     // `body_proc` を実行するかどうか判定するために、
+                        //     // `cond_proc` を実行する必要がある。`cond_proc`
+                        //     // を実行するには、現在の関数フレームと
+                        //     `cond_proc`
+                        //     // の継続をスタックに積んで ここを `break`
+                        //     //
+                        //     すればよいが、その後どうやってこのパスに戻ってくるか？
+                    } else {
+                        eval_elem(val);
+                    }
+                } else {
+                    eval_elem(val);
+                }
+            } else {
+                eval_elem(e);
+            }
+        }
+    }
 }
 
 void eval(struct Token *tokens[]) {

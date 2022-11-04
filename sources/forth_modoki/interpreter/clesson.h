@@ -102,6 +102,20 @@ void stack_print_all(void);
 void test_stack(void);
 
 //
+// continuation.c
+//
+
+struct Continuation {
+    struct ElementArray *exec_array;
+    int pc;
+};
+
+struct Continuation *new_co(struct ElementArray *ea, int pc);
+void co_push(struct Continuation *c);
+struct Continuation *co_pop(void);
+bool co_stack_empty(void);
+
+//
 // util.c
 //
 
