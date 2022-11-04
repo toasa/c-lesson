@@ -7,15 +7,13 @@ static int head = 0;
 
 void stack_push(struct Element *e) {
     expect(head < STACK_SIZE, "Stack overflow");
-    stack[head] = e;
-    head++;
+    stack[head++] = e;
 }
 
 struct Element *stack_pop(void) {
     if (head == 0)
         return NULL;
-    head--;
-    return stack[head];
+    return stack[--head];
 };
 
 void stack_init(void) { head = 0; }
