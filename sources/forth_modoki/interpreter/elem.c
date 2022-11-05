@@ -1,36 +1,37 @@
 #include "clesson.h"
 
-struct Element *new_num_element(int num) {
+struct Element *_new_element(enum ElementType ty) {
     struct Element *e = calloc(1, sizeof(struct Element));
-    e->ty = ELEM_NUMBER;
+    e->ty = ty;
+    return e;
+}
+
+struct Element *new_num_element(int num) {
+    struct Element *e = _new_element(ELEM_NUMBER);
     e->u.number = num;
     return e;
 }
 
 struct Element *new_lit_name_element(char *name) {
-    struct Element *e = calloc(1, sizeof(struct Element));
-    e->ty = ELEM_LITERAL_NAME;
+    struct Element *e = _new_element(ELEM_LITERAL_NAME);
     e->u.name = name;
     return e;
 }
 
 struct Element *new_exec_name_element(char *name) {
-    struct Element *e = calloc(1, sizeof(struct Element));
-    e->ty = ELEM_EXECUTABLE_NAME;
+    struct Element *e = _new_element(ELEM_EXECUTABLE_NAME);
     e->u.name = name;
     return e;
 }
 
 struct Element *new_cfunc_element(void (*cfunc)()) {
-    struct Element *e = calloc(1, sizeof(struct Element));
-    e->ty = ELEM_C_FUNC;
+    struct Element *e = _new_element(ELEM_C_FUNC);
     e->u.cfunc = cfunc;
     return e;
 }
 
 struct Element *new_exec_array_element(struct ElementArray *ea) {
-    struct Element *e = calloc(1, sizeof(struct Element));
-    e->ty = ELEM_EXECUTABLE_ARRAY;
+    struct Element *e = _new_element(ELEM_EXECUTABLE_ARRAY);
     e->u.byte_code = ea;
     return e;
 }
