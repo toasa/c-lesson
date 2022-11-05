@@ -411,6 +411,17 @@ static void test_eval_if_op_true(void) {
     assert(expect == actual);
 }
 
+static void test_eval_if_op_true_nested(void) {
+    char *input = "{1 {10 20 add} if} exec";
+    int expect = 10 + 20;
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    int actual = stack_pop()->u.number;
+    assert(expect == actual);
+}
+
 static void test_eval_if_op_false(void) {
     char *input = "0 {10 20 add} if";
 
@@ -420,8 +431,28 @@ static void test_eval_if_op_false(void) {
     assert(stack_is_empty());
 }
 
+static void test_eval_if_op_false_nested(void) {
+    char *input = "{0 {10 20 add} if} exec";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(stack_is_empty());
+}
+
 static void test_eval_if_op_nested_following(void) {
     char *input = "/b { 1 { 3 } if 2 } def /a {b 1} def a";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(1 == stack_pop()->u.number);
+    assert(2 == stack_pop()->u.number);
+    assert(3 == stack_pop()->u.number);
+}
+
+static void test_eval_if_op_nested_following_nested(void) {
+    char *input = "{/b { 1 { 3 } if 2 } def /a {b 1} def a} exec";
 
     struct Token **tokens = tokenize(input);
     eval(tokens);
@@ -576,8 +607,11 @@ void test_eval(void) {
     test_eval_exec_op();
     test_eval_exec_op_nested();
     test_eval_if_op_true();
+    test_eval_if_op_true_nested();
     test_eval_if_op_false();
+    test_eval_if_op_false_nested();
     test_eval_if_op_nested_following();
+    test_eval_if_op_nested_following_nested();
     test_eval_ifelse_op_then();
     test_eval_ifelse_op_then_nested();
     test_eval_ifelse_op_else();
