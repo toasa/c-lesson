@@ -36,6 +36,12 @@ struct Element *new_exec_array_element(struct ElementArray *ea) {
     return e;
 }
 
+struct Element *new_control_element(char *name) {
+    struct Element *e = _new_element(ELEM_CONTROL);
+    e->u.name = name;
+    return e;
+}
+
 struct Element *copy_element(struct Element *e) {
     struct Element *new = calloc(1, sizeof(struct Element));
     *new = *e;
@@ -67,6 +73,9 @@ static void _element_print(struct Element *e, bool newline) {
         printf("}");
         break;
     }
+    case ELEM_CONTROL:
+        printf("Control: %s", e->u.name);
+        break;
     default:
         printf("Unknown type %d", e->ty);
         break;

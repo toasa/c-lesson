@@ -352,13 +352,29 @@ static void eval_exec_array(struct ElementArray *elems) {
                         struct Element *proc_else = stack_pop();
                         struct Element *proc_then = stack_pop();
                         struct Element *cond = stack_pop();
+                        struct Element *jni = new_control_element("jmp_not_if");
+                        struct Element *exec = new_exec_name_element("exec");
+                        struct Element *j = new_control_element("jmp");
+
+                        struct Element **elems =
+                            calloc(1, sizeof(struct Element) * 9);
+                        elems[0] = cond;
+                        elems[1] = new_num_element(5);
+                        elems[2] = new_control_element("jmp_not_if");
+                        elems[3] = proc_then;
+                        elems[4] = exec;
+                        elems[5] = new_num_element(3);
+                        elems[6] = new_control_element("jmp");
+                        elems[7] = proc_else;
+                        elems[8] = exec;
+
+                        struct ElementArray *ea =
+                            calloc(1, sizeof(struct ElementArray));
+                        ea->len = 9;
+                        ea->elem = elems;
 
                         co_push(new_co(c->exec_array, i + 1));
-
-                        if (cond->u.number)
-                            co_push(new_co(proc_then->u.byte_code, 0));
-                        else
-                            co_push(new_co(proc_else->u.byte_code, 0));
+                        co_push(new_co(ea, 0));
                         break;
                     } else if (streq(e->u.name, "repeat")) {
                         struct Element *proc = stack_pop();
@@ -388,7 +404,22 @@ static void eval_exec_array(struct ElementArray *elems) {
                     eval_elem(val);
                 }
             } else {
-                eval_elem(e);
+                if (e->ty == ELEM_CONTROL) {
+                    if (streq(e->u.name, "jmp")) {
+                        int n = stack_pop()->u.number;
+                        co_push(new_co(c->exec_array, i + n));
+                        break;
+                    } else if (streq(e->u.name, "jmp_not_if")) {
+                        int n = stack_pop()->u.number;
+                        int cond = stack_pop()->u.number;
+                        if (!cond) {
+                            co_push(new_co(c->exec_array, i + n));
+                            break;
+                        }
+                    }
+                } else {
+                    eval_elem(e);
+                }
             }
         }
     }
