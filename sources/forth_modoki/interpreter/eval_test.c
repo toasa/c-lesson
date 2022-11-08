@@ -480,6 +480,15 @@ static void test_eval_ifelse_op_then_nested(void) {
     assert(11 == stack_pop()->u.number);
 }
 
+static void test_eval_ifelse_op_then_incomplete(void) {
+    char *input = "/foo { { 456 } ifelse } def 1 { 123 } foo";
+
+    struct Token **tokens = tokenize(input);
+    eval(tokens);
+
+    assert(123 == stack_pop()->u.number);
+}
+
 static void test_eval_ifelse_op_else(void) {
     char *input = "10 0 {1 add} {2 add} ifelse";
 
@@ -616,6 +625,7 @@ void test_eval(void) {
     test_eval_ifelse_op_then_nested();
     test_eval_ifelse_op_else();
     test_eval_ifelse_op_else_nested();
+    test_eval_ifelse_op_then_incomplete();
     test_eval_ifelse_op_following();
     test_eval_repeat_op();
     test_eval_repeat_op_nested();
