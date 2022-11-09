@@ -363,19 +363,23 @@ static void eval_exec_array(struct ElementArray *elems) {
                         for (int i = 0; i < n->u.number; i++)
                             co_push(new_co(proc->u.byte_code, 0));
                         break;
-                        // } else if (streq(e->u.name, "while")) {
-                        //     struct Element *body_proc = stack_pop();
-                        //     struct Element *cond_proc = stack_pop();
+                    } else if (streq(e->u.name, "while")) {
+                        struct Element *body_proc = stack_pop();
+                        struct Element *cond_proc = stack_pop();
 
-                        //     // TODO: ふーむ、、どうすべきか？
-                        //     //
-                        //     // `body_proc` を実行するかどうか判定するために、
-                        //     // `cond_proc` を実行する必要がある。`cond_proc`
-                        //     // を実行するには、現在の関数フレームと
-                        //     `cond_proc`
-                        //     // の継続をスタックに積んで ここを `break`
-                        //     //
-                        //     すればよいが、その後どうやってこのパスに戻ってくるか？
+                        struct Emitter *em = new_emitter();
+                        emit_elem(em, cond_proc);
+                        emit_elem(em, new_exec_name_element("exec"));
+                        emit_elem(em, new_num_element(5));
+                        emit_elem(em, new_control_element("jmp_not_if"));
+                        emit_elem(em, body_proc);
+                        emit_elem(em, new_exec_name_element("exec"));
+                        emit_elem(em, new_num_element(-7));
+                        emit_elem(em, new_control_element("jmp"));
+
+                        co_push(new_co(c->exec_array, i + 1));
+                        co_push(new_co(emit_get(em), 0));
+                        break;
                     } else {
                         eval_elem(val);
                     }
