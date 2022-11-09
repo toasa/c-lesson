@@ -19,6 +19,8 @@ void co_push(struct Continuation *c) {
 
 struct Continuation *co_pop(void) {
     expect(pos >= 0, "Continuation stack is empty");
+    if (pos <= 0)
+        return NULL;
     return co_stack[--pos];
 }
 
