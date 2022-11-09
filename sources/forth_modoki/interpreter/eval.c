@@ -234,6 +234,21 @@ static void _init(void) {
     register_primitives();
 }
 
+static void ifelse_compile(struct Emitter *em) {
+    emit_elem(em, new_num_element(3));
+    emit_elem(em, new_num_element(2));
+    emit_elem(em, new_exec_name_element("roll"));
+    emit_elem(em, new_num_element(5));
+    emit_elem(em, new_control_element("jmp_not_if"));
+    emit_elem(em, new_exec_name_element("pop"));
+    emit_elem(em, new_exec_name_element("exec"));
+    emit_elem(em, new_num_element(4));
+    emit_elem(em, new_control_element("jmp"));
+    emit_elem(em, new_exec_name_element("exch"));
+    emit_elem(em, new_exec_name_element("pop"));
+    emit_elem(em, new_exec_name_element("exec"));
+}
+
 static struct Element *compile_exec_array(struct Token **tokens) {
     struct Emitter *em = new_emitter();
     struct ElementArray *ea;
@@ -245,9 +260,13 @@ static struct Element *compile_exec_array(struct Token **tokens) {
         case TK_NUMBER:
             emit_elem(em, new_num_element(t->u.number));
             break;
-        case TK_EXECUTABLE_NAME:
-            emit_elem(em, new_exec_name_element(t->u.name));
+        case TK_EXECUTABLE_NAME: {
+            if (streq(t->u.name, "ifelse"))
+                ifelse_compile(em);
+            else
+                emit_elem(em, new_exec_name_element(t->u.name));
             break;
+        }
         case TK_LITERAL_NAME:
             emit_elem(em, new_lit_name_element(t->u.name));
             break;
@@ -338,34 +357,6 @@ static void eval_exec_array(struct ElementArray *elems) {
                             co_push(new_co(proc->u.byte_code, 0));
                             break;
                         }
-                    } else if (streq(e->u.name, "ifelse")) {
-                        struct Element *proc_else = stack_pop();
-                        struct Element *proc_then = stack_pop();
-                        struct Element *cond = stack_pop();
-                        struct Element *jni = new_control_element("jmp_not_if");
-                        struct Element *exec = new_exec_name_element("exec");
-                        struct Element *j = new_control_element("jmp");
-
-                        struct Element **elems =
-                            calloc(1, sizeof(struct Element) * 9);
-                        elems[0] = cond;
-                        elems[1] = new_num_element(5);
-                        elems[2] = new_control_element("jmp_not_if");
-                        elems[3] = proc_then;
-                        elems[4] = exec;
-                        elems[5] = new_num_element(3);
-                        elems[6] = new_control_element("jmp");
-                        elems[7] = proc_else;
-                        elems[8] = exec;
-
-                        struct ElementArray *ea =
-                            calloc(1, sizeof(struct ElementArray));
-                        ea->len = 9;
-                        ea->elem = elems;
-
-                        co_push(new_co(c->exec_array, i + 1));
-                        co_push(new_co(ea, 0));
-                        break;
                     } else if (streq(e->u.name, "repeat")) {
                         struct Element *proc = stack_pop();
                         struct Element *n = stack_pop();
