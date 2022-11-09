@@ -259,6 +259,21 @@ static void ifelse_compile(struct Emitter *em) {
     emit_elem(em, new_exec_name_element("exec"));
 }
 
+static void while_compile(struct Emitter *em) {
+    emit_elem(em, new_control_element("store"));
+    emit_elem(em, new_control_element("store"));
+    emit_elem(em, new_num_element(0));
+    emit_elem(em, new_control_element("load"));
+    emit_elem(em, new_exec_name_element("exec"));
+    emit_elem(em, new_num_element(6));
+    emit_elem(em, new_control_element("jmp_not_if"));
+    emit_elem(em, new_num_element(1));
+    emit_elem(em, new_control_element("load"));
+    emit_elem(em, new_exec_name_element("exec"));
+    emit_elem(em, new_num_element(-9));
+    emit_elem(em, new_control_element("jmp"));
+}
+
 static struct Element *compile_exec_array(struct Token **tokens) {
     struct Emitter *em = new_emitter();
 
@@ -274,6 +289,8 @@ static struct Element *compile_exec_array(struct Token **tokens) {
                 if_compile(em);
             else if (streq(t->u.name, "ifelse"))
                 ifelse_compile(em);
+            else if (streq(t->u.name, "while"))
+                while_compile(em);
             else
                 emit_elem(em, new_exec_name_element(t->u.name));
             break;
@@ -333,8 +350,20 @@ static void eval_elem(struct Element *e) {
 
 static void eval_exec_array(struct ElementArray *elems) {
     co_push(new_co(elems, 0));
+
     while (!co_stack_empty()) {
-        struct Continuation *c = co_pop();
+        struct ContStackElement *co_elem;
+
+        // Discard remaining local variables of previous continuation's.
+        do {
+            co_elem = co_pop();
+        } while (co_elem != NULL && co_elem->ty != CS_ELEM_CONTINUATION);
+
+        if (co_elem == NULL)
+            break;
+
+        struct Continuation *c = co_elem->u.co;
+
         for (int i = c->pc; i < c->exec_array->len; i++) {
             struct Element *e = c->exec_array->elem[i];
             if (e->ty == ELEM_EXECUTABLE_NAME) {
@@ -363,23 +392,6 @@ static void eval_exec_array(struct ElementArray *elems) {
                         for (int i = 0; i < n->u.number; i++)
                             co_push(new_co(proc->u.byte_code, 0));
                         break;
-                    } else if (streq(e->u.name, "while")) {
-                        struct Element *body_proc = stack_pop();
-                        struct Element *cond_proc = stack_pop();
-
-                        struct Emitter *em = new_emitter();
-                        emit_elem(em, cond_proc);
-                        emit_elem(em, new_exec_name_element("exec"));
-                        emit_elem(em, new_num_element(5));
-                        emit_elem(em, new_control_element("jmp_not_if"));
-                        emit_elem(em, body_proc);
-                        emit_elem(em, new_exec_name_element("exec"));
-                        emit_elem(em, new_num_element(-7));
-                        emit_elem(em, new_control_element("jmp"));
-
-                        co_push(new_co(c->exec_array, i + 1));
-                        co_push(new_co(emit_get(em), 0));
-                        break;
                     } else {
                         eval_elem(val);
                     }
@@ -399,6 +411,14 @@ static void eval_exec_array(struct ElementArray *elems) {
                             co_push(new_co(c->exec_array, i + n));
                             break;
                         }
+                    } else if (streq(e->u.name, "store")) {
+                        struct Element *lvar = stack_pop();
+                        struct ContStackElement *co_elem = new_lvar(lvar);
+                        co_push(co_elem);
+                    } else if (streq(e->u.name, "load")) {
+                        int n = stack_pop()->u.number;
+                        struct Element *val = co_load_lvar(n);
+                        stack_push(val);
                     }
                 } else {
                     eval_elem(e);
