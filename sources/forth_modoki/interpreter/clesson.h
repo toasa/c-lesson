@@ -74,6 +74,12 @@ struct Element {
     } u;
 };
 
+struct Emitter {
+    struct Element **elems;
+    int len;
+    int cap;
+};
+
 struct Element *new_num_element(int num);
 struct Element *new_lit_name_element(char *name);
 struct Element *new_exec_name_element(char *name);
@@ -82,6 +88,10 @@ struct Element *new_exec_array_element(struct ElementArray *ea);
 struct Element *new_control_element(char *name);
 struct Element *copy_element(struct Element *e);
 void element_print(struct Element *e);
+
+struct Emitter *new_emitter(void);
+void emit_elem(struct Emitter *em, struct Element *e);
+struct Element **emit_get(struct Emitter *em);
 
 //
 // dict.c
