@@ -234,6 +234,16 @@ static void _init(void) {
     register_primitives();
 }
 
+static void if_compile(struct Emitter *em) {
+    emit_elem(em, new_exec_name_element("exch"));
+    emit_elem(em, new_num_element(4));
+    emit_elem(em, new_control_element("jmp_not_if"));
+    emit_elem(em, new_exec_name_element("exec"));
+    emit_elem(em, new_num_element(2));
+    emit_elem(em, new_control_element("jmp"));
+    emit_elem(em, new_exec_name_element("pop"));
+}
+
 static void ifelse_compile(struct Emitter *em) {
     emit_elem(em, new_num_element(3));
     emit_elem(em, new_num_element(2));
@@ -261,7 +271,9 @@ static struct Element *compile_exec_array(struct Token **tokens) {
             emit_elem(em, new_num_element(t->u.number));
             break;
         case TK_EXECUTABLE_NAME: {
-            if (streq(t->u.name, "ifelse"))
+            if (streq(t->u.name, "if"))
+                if_compile(em);
+            else if (streq(t->u.name, "ifelse"))
                 ifelse_compile(em);
             else
                 emit_elem(em, new_exec_name_element(t->u.name));
@@ -348,15 +360,6 @@ static void eval_exec_array(struct ElementArray *elems) {
                         co_push(new_co(c->exec_array, i + 1));
                         co_push(new_co(proc->u.byte_code, 0));
                         break;
-                    } else if (streq(e->u.name, "if")) {
-                        struct Element *proc = stack_pop();
-                        struct Element *cond = stack_pop();
-
-                        if (cond->u.number) {
-                            co_push(new_co(c->exec_array, i + 1));
-                            co_push(new_co(proc->u.byte_code, 0));
-                            break;
-                        }
                     } else if (streq(e->u.name, "repeat")) {
                         struct Element *proc = stack_pop();
                         struct Element *n = stack_pop();
