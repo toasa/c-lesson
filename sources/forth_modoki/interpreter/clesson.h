@@ -122,9 +122,24 @@ struct Continuation {
     int pc;
 };
 
-struct Continuation *new_co(struct ElementArray *ea, int pc);
-void co_push(struct Continuation *c);
-struct Continuation *co_pop(void);
+enum ContStackElementType {
+    CS_ELEM_CONTINUATION,
+    CS_ELEM_LOCAL_VAR,
+};
+
+struct ContStackElement {
+    enum ContStackElementType ty;
+    union {
+        struct Continuation *co;
+        struct Element *lvar;
+    } u;
+};
+
+struct ContStackElement *new_co(struct ElementArray *ea, int pc);
+struct ContStackElement *new_lvar(struct Element *lvar);
+void co_push(struct ContStackElement *c);
+struct ContStackElement *co_pop(void);
+struct Element *co_load_lvar(int n);
 bool co_stack_empty(void);
 
 //
