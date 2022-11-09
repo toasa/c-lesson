@@ -235,73 +235,73 @@ static void _init(void) {
 }
 
 static void if_compile(struct Emitter *em) {
-    emit_elem(em, new_exec_name_element("exch"));
-    emit_elem(em, new_num_element(4));
-    emit_elem(em, new_control_element("jmp_not_if"));
-    emit_elem(em, new_exec_name_element("exec"));
-    emit_elem(em, new_num_element(2));
-    emit_elem(em, new_control_element("jmp"));
-    emit_elem(em, new_exec_name_element("pop"));
+    emit_exec_name(em, "exch");
+    emit_number(em, 4);
+    emit_control(em, "jmp_not_if");
+    emit_exec_name(em, "exec");
+    emit_number(em, 2);
+    emit_control(em, "jmp");
+    emit_exec_name(em, "pop");
 }
 
 static void ifelse_compile(struct Emitter *em) {
-    emit_elem(em, new_num_element(3));
-    emit_elem(em, new_num_element(2));
-    emit_elem(em, new_exec_name_element("roll"));
-    emit_elem(em, new_num_element(5));
-    emit_elem(em, new_control_element("jmp_not_if"));
-    emit_elem(em, new_exec_name_element("pop"));
-    emit_elem(em, new_exec_name_element("exec"));
-    emit_elem(em, new_num_element(4));
-    emit_elem(em, new_control_element("jmp"));
-    emit_elem(em, new_exec_name_element("exch"));
-    emit_elem(em, new_exec_name_element("pop"));
-    emit_elem(em, new_exec_name_element("exec"));
+    emit_number(em, 3);
+    emit_number(em, 2);
+    emit_exec_name(em, "roll");
+    emit_number(em, 5);
+    emit_control(em, "jmp_not_if");
+    emit_exec_name(em, "pop");
+    emit_exec_name(em, "exec");
+    emit_number(em, 4);
+    emit_control(em, "jmp");
+    emit_exec_name(em, "exch");
+    emit_exec_name(em, "pop");
+    emit_exec_name(em, "exec");
 }
 
 static void while_compile(struct Emitter *em) {
-    emit_elem(em, new_control_element("store"));
-    emit_elem(em, new_control_element("store"));
-    emit_elem(em, new_num_element(0));
-    emit_elem(em, new_control_element("load"));
-    emit_elem(em, new_exec_name_element("exec"));
-    emit_elem(em, new_num_element(6));
-    emit_elem(em, new_control_element("jmp_not_if"));
-    emit_elem(em, new_num_element(1));
-    emit_elem(em, new_control_element("load"));
-    emit_elem(em, new_exec_name_element("exec"));
-    emit_elem(em, new_num_element(-9));
-    emit_elem(em, new_control_element("jmp"));
+    emit_control(em, "store");
+    emit_control(em, "store");
+    emit_number(em, 0);
+    emit_control(em, "load");
+    emit_exec_name(em, "exec");
+    emit_number(em, 6);
+    emit_control(em, "jmp_not_if");
+    emit_number(em, 1);
+    emit_control(em, "load");
+    emit_exec_name(em, "exec");
+    emit_number(em, -9);
+    emit_control(em, "jmp");
 }
 
 static void repeat_compile(struct Emitter *em) {
-    emit_elem(em, new_exec_name_element("exch"));
-    emit_elem(em, new_num_element(1));
-    emit_elem(em, new_exec_name_element("add"));
-    emit_elem(em, new_exec_name_element("exch"));
+    emit_exec_name(em, "exch");
+    emit_number(em, 1);
+    emit_exec_name(em, "add");
+    emit_exec_name(em, "exch");
 
-    emit_elem(em, new_control_element("store"));
-    emit_elem(em, new_control_element("store"));
+    emit_control(em, "store");
+    emit_control(em, "store");
 
-    emit_elem(em, new_num_element(0));
-    emit_elem(em, new_control_element("load"));
+    emit_number(em, 0);
+    emit_control(em, "load");
 
-    emit_elem(em, new_num_element(1));
-    emit_elem(em, new_exec_name_element("sub"));
+    emit_number(em, 1);
+    emit_exec_name(em, "sub");
 
-    emit_elem(em, new_control_element("lpop"));
-    emit_elem(em, new_exec_name_element("dup"));
-    emit_elem(em, new_control_element("store"));
+    emit_control(em, "lpop");
+    emit_exec_name(em, "dup");
+    emit_control(em, "store");
 
-    emit_elem(em, new_num_element(6));
-    emit_elem(em, new_control_element("jmp_not_if"));
+    emit_number(em, 6);
+    emit_control(em, "jmp_not_if");
 
-    emit_elem(em, new_num_element(1));
-    emit_elem(em, new_control_element("load"));
-    emit_elem(em, new_exec_name_element("exec"));
+    emit_number(em, 1);
+    emit_control(em, "load");
+    emit_exec_name(em, "exec");
 
-    emit_elem(em, new_num_element(-13));
-    emit_elem(em, new_control_element("jmp"));
+    emit_number(em, -13);
+    emit_control(em, "jmp");
 }
 
 static struct Element *compile_exec_array(struct Token **tokens) {
@@ -312,7 +312,7 @@ static struct Element *compile_exec_array(struct Token **tokens) {
 
         switch (t->ty) {
         case TK_NUMBER:
-            emit_elem(em, new_num_element(t->u.number));
+            emit_number(em, t->u.number);
             break;
         case TK_EXECUTABLE_NAME: {
             if (streq(t->u.name, "if"))
@@ -324,11 +324,11 @@ static struct Element *compile_exec_array(struct Token **tokens) {
             else if (streq(t->u.name, "repeat"))
                 repeat_compile(em);
             else
-                emit_elem(em, new_exec_name_element(t->u.name));
+                emit_exec_name(em, t->u.name);
             break;
         }
         case TK_LITERAL_NAME:
-            emit_elem(em, new_lit_name_element(t->u.name));
+            emit_lit_name(em, t->u.name);
             break;
         case TK_OPEN_CURLY:
             tok_pos++;

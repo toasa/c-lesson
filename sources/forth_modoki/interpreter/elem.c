@@ -104,6 +104,22 @@ void emit_elem(struct Emitter *em, struct Element *e) {
     }
 }
 
+void emit_number(struct Emitter *em, int num) {
+    emit_elem(em, new_num_element(num));
+}
+
+void emit_exec_name(struct Emitter *em, char *name) {
+    emit_elem(em, new_exec_name_element(name));
+}
+
+void emit_lit_name(struct Emitter *em, char *name) {
+    emit_elem(em, new_lit_name_element(name));
+}
+
+void emit_control(struct Emitter *em, char *name) {
+    emit_elem(em, new_control_element(name));
+}
+
 struct ElementArray *emit_get(struct Emitter *em) {
     // Shrink the `elems` size to `len`.
     em->elems = realloc(em->elems, sizeof(struct Element) * em->len);
