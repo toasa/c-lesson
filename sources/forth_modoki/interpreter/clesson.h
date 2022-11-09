@@ -91,6 +91,10 @@ void element_print(struct Element *e);
 
 struct Emitter *new_emitter(void);
 void emit_elem(struct Emitter *em, struct Element *e);
+void emit_number(struct Emitter *em, int num);
+void emit_exec_name(struct Emitter *em, char *name);
+void emit_lit_name(struct Emitter *em, char *name);
+void emit_control(struct Emitter *em, char *name);
 struct ElementArray *emit_get(struct Emitter *em);
 
 //
