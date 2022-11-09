@@ -429,7 +429,4 @@ void eval(struct Token *tokens[]) {
             break;
         }
     }
-
-    // if (!stack_is_empty())
-    //     stack_print_all();
 }
