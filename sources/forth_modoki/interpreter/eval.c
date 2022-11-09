@@ -235,37 +235,30 @@ static void _init(void) {
 }
 
 static struct Element *compile_exec_array(struct Token **tokens) {
-    // Default capacity, expand when needed.
-    int cap = 10;
-    struct Element **elems = calloc(1, sizeof(struct Element) * cap);
+    struct Emitter *em = new_emitter();
+    struct ElementArray *ea;
 
-    int len = 0;
     for (; tokens[tok_pos]->ty != TK_END_OF_FILE; tok_pos++) {
         struct Token *t = tokens[tok_pos];
 
         switch (t->ty) {
         case TK_NUMBER:
-            elems[len++] = new_num_element(t->u.number);
+            emit_elem(em, new_num_element(t->u.number));
             break;
         case TK_EXECUTABLE_NAME:
-            elems[len++] = new_exec_name_element(t->u.name);
+            emit_elem(em, new_exec_name_element(t->u.name));
             break;
         case TK_LITERAL_NAME:
-            elems[len++] = new_lit_name_element(t->u.name);
+            emit_elem(em, new_lit_name_element(t->u.name));
             break;
         case TK_OPEN_CURLY:
             tok_pos++;
-            elems[len++] = compile_exec_array(tokens);
+            emit_elem(em, compile_exec_array(tokens));
             break;
         case TK_CLOSE_CURLY:
             goto succuess;
         default:
             break;
-        }
-
-        if (len >= cap) {
-            cap *= 2;
-            elems = realloc(elems, sizeof(struct Element) * cap);
         }
     }
 
@@ -274,12 +267,9 @@ static struct Element *compile_exec_array(struct Token **tokens) {
 
 succuess:
 
-    // Shrink the `elems` size to `len`.
-    elems = realloc(elems, sizeof(struct Element) * len);
-
-    struct ElementArray *ea = calloc(1, sizeof(struct ElementArray));
-    ea->len = len;
-    ea->elem = elems;
+    ea = calloc(1, sizeof(struct ElementArray));
+    ea->len = em->len;
+    ea->elem = emit_get(em);
 
     return new_exec_array_element(ea);
 }

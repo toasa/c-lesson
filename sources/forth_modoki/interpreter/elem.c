@@ -86,3 +86,26 @@ static void _element_print(struct Element *e, bool newline) {
 }
 
 void element_print(struct Element *e) { _element_print(e, true); }
+
+struct Emitter *new_emitter(void) {
+    struct Emitter *e = calloc(1, sizeof(struct Emitter));
+    e->cap = 10; // Default capacity
+    e->elems = calloc(1, sizeof(struct Element) * e->cap);
+    return e;
+}
+
+void emit_elem(struct Emitter *em, struct Element *e) {
+    em->elems[em->len++] = e;
+
+    // Expand when needed.
+    if (em->len >= em->cap) {
+        em->cap *= 2;
+        em->elems = realloc(em->elems, sizeof(struct Element) * em->cap);
+    }
+}
+
+struct Element **emit_get(struct Emitter *em) {
+    // Shrink the `elems` size to `len`.
+    em->elems = realloc(em->elems, sizeof(struct Element) * em->len);
+    return em->elems;
+}
