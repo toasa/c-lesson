@@ -261,7 +261,6 @@ static void ifelse_compile(struct Emitter *em) {
 
 static struct Element *compile_exec_array(struct Token **tokens) {
     struct Emitter *em = new_emitter();
-    struct ElementArray *ea;
 
     for (; tokens[tok_pos]->ty != TK_END_OF_FILE; tok_pos++) {
         struct Token *t = tokens[tok_pos];
@@ -298,11 +297,7 @@ static struct Element *compile_exec_array(struct Token **tokens) {
 
 succuess:
 
-    ea = calloc(1, sizeof(struct ElementArray));
-    ea->len = em->len;
-    ea->elem = emit_get(em);
-
-    return new_exec_array_element(ea);
+    return new_exec_array_element(emit_get(em));
 }
 
 static void eval_exec_name(const char *name) {

@@ -104,8 +104,12 @@ void emit_elem(struct Emitter *em, struct Element *e) {
     }
 }
 
-struct Element **emit_get(struct Emitter *em) {
+struct ElementArray *emit_get(struct Emitter *em) {
     // Shrink the `elems` size to `len`.
     em->elems = realloc(em->elems, sizeof(struct Element) * em->len);
-    return em->elems;
+
+    struct ElementArray *ea = calloc(1, sizeof(struct ElementArray));
+    ea->len = em->len;
+    ea->elem = em->elems;
+    return ea;
 }

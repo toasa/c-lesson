@@ -91,7 +91,7 @@ void element_print(struct Element *e);
 
 struct Emitter *new_emitter(void);
 void emit_elem(struct Emitter *em, struct Element *e);
-struct Element **emit_get(struct Emitter *em);
+struct ElementArray *emit_get(struct Emitter *em);
 
 //
 // dict.c
