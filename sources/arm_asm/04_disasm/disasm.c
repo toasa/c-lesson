@@ -6,6 +6,7 @@ enum opcode {
 
 static int print_asm_mov(int word);
 static int print_asm_branch(int word);
+static int print_asm_ldr_str(int word);
 
 //
 // See the following ARM7DI data sheet for more detail:
@@ -20,6 +21,9 @@ static int print_asm(int word) {
         break;
     case 0b101:
         return print_asm_branch(word);
+        break;
+    case 0b010:
+        return print_asm_ldr_str(word);
         break;
     default:
         return -1;
@@ -46,6 +50,22 @@ static int print_asm_branch(int word) {
     return 0;
 }
 
+static int print_asm_ldr_str(int word) {
+    bool is_load = ((word >> 20) & 0x01) == 1;
+
+    int src_dst_reg = (word >> 12) & 0x0F;
+    int base_reg = (word >> 16) & 0x0F;
+
+    int offset = word & 0x0FFF;
+
+    if (is_load)
+        cl_printf("ldr r%d, [r15, #%d]\n", src_dst_reg, offset);
+    else
+        cl_printf("str r%d, [r%d]\n", src_dst_reg, base_reg);
+
+    return 0;
+}
+
 #define ARR_SIZE(a) (int)(sizeof(a) / sizeof(a[0]))
 
 static void _test_disasm(void) {
@@ -58,11 +78,19 @@ static void _test_disasm(void) {
 
         // b
         0xEAFFFFFE,
+
+        // ldr
+        0xE59F0038,
+
+        // str
+        0xE5801000,
+        0xE5802000,
     };
 
     char *expecteds[] = {
         "mov r1, #0x68\n", "mov r1, #0x65\n", "mov r2, #0xd\n",
-        "mov r2, #0xa\n",  "b [r15, #-2]\n",
+        "mov r2, #0xa\n",  "b [r15, #-2]\n",  "ldr r0, [r15, #56]\n",
+        "str r1, [r0]\n",  "str r2, [r0]\n",
     };
 
     cl_enable_buffer_mode();
