@@ -24,7 +24,7 @@ static int print_asm(int word) {
 
 #define ARR_SIZE(a) (int)(sizeof(a) / sizeof(a[0]))
 
-static void test_disasm_mov(void) {
+static void _test_disasm(void) {
     int words[] = {
         0xE3A01068,
         0xE3A01065,
@@ -55,4 +55,4 @@ static void test_disasm_mov(void) {
     cl_clear_output();
 }
 
-void test_disasm(void) { test_disasm_mov(); }
+void test_disasm(void) { _test_disasm(); }
