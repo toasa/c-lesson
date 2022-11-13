@@ -11,10 +11,11 @@ enum opcode {
 //
 static int print_asm(int word) {
     int imm = word & 0xFF;
+    int dst_reg = (word >> 12) & 0x0F;
     int opcode = (word >> 21) & 0x0F;
 
     if (opcode == OP_MOV) {
-        cl_printf("mov r1, #%#x\n", imm);
+        cl_printf("mov r%d, #%#x\n", dst_reg, imm);
         return 0;
     }
 
@@ -27,11 +28,15 @@ static void test_disasm_mov(void) {
     int words[] = {
         0xE3A01068,
         0xE3A01065,
+        0xE3A0200D,
+        0xE3A0200A,
     };
 
     char *expecteds[] = {
         "mov r1, #0x68\n",
         "mov r1, #0x65\n",
+        "mov r2, #0xd\n",
+        "mov r2, #0xa\n",
     };
 
     cl_enable_buffer_mode();
