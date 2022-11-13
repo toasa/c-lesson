@@ -1,4 +1,4 @@
-SRC=putchar_mem
+SRC=print_hex
 
 run:
 	arm-none-eabi-as ${SRC}.s -o ${SRC}.o
