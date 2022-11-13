@@ -1,8 +1,20 @@
 #include "disasm.h"
 
+enum opcode {
+    OP_MOV = 0b1101,
+};
+
+//
+// See the following ARM7DI data sheet for more detail:
+//
+// https://developer.arm.com/docs/ddi0027/latest/arm7di-data-sheet
+//
 static int print_asm(int word) {
-    if (word == 0xE3A01068) {
-        cl_printf("mov r1, #0x68\n");
+    int imm = word & 0xFF;
+    int opcode = (word >> 21) & 0x0F;
+
+    if (opcode == OP_MOV) {
+        cl_printf("mov r1, #%#x\n", imm);
         return 0;
     }
 
@@ -14,12 +26,12 @@ static int print_asm(int word) {
 static void test_disasm_mov(void) {
     int words[] = {
         0xE3A01068,
-        0xE3A01068,
+        0xE3A01065,
     };
 
     char *expecteds[] = {
         "mov r1, #0x68\n",
-        "mov r1, #0x68\n",
+        "mov r1, #0x65\n",
     };
 
     cl_enable_buffer_mode();
