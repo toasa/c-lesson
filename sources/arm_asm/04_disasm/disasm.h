@@ -8,6 +8,11 @@
 #include <string.h>
 
 //
+// disasm.c
+//
+void test_disasm(void);
+
+//
 // cl_utils.c
 //
 

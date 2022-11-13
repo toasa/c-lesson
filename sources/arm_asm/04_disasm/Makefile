@@ -1,4 +1,4 @@
-SRCS = main.c cl_utils.c utils.c
+SRCS = main.c cl_utils.c utils.c disasm.c
 
 CFLAGS = -g
 
