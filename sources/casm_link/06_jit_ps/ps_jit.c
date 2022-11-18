@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
 
 #include "parser.h"
@@ -13,19 +13,18 @@ JIT
 */
 int *binary_buf = NULL;
 
-int* allocate_executable_buf(int size) {
-    return (int*)mmap(0, size,
-                 PROT_READ | PROT_WRITE | PROT_EXEC,
-                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+int *allocate_executable_buf(int size) {
+    return (int *)mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC,
+                       MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
 void ensure_jit_buf() {
-    if(binary_buf == NULL) {
+    if (binary_buf == NULL) {
         binary_buf = allocate_executable_buf(1024);
     }
 }
 
-int* jit_script(char *input) {
+int *jit_script(char *input) {
     ensure_jit_buf();
     /*
     TODO: emit binary here
@@ -36,11 +35,7 @@ int* jit_script(char *input) {
     return binary_buf;
 }
 
-
-static void run_unit_tests() {
-    printf("all test done\n");
-}
-
+static void run_unit_tests() { printf("all test done\n"); }
 
 int main() {
     int res;
@@ -54,7 +49,7 @@ int main() {
     /*
      TODO: Make below test pass.
     */
-    funcvar = (int(*)(int, int))jit_script("3 7 add r1 sub 4 mul");
+    funcvar = (int (*)(int, int))jit_script("3 7 add r1 sub 4 mul");
 
     res = funcvar(1, 5);
     assert_int_eq(20, res);
@@ -64,4 +59,3 @@ int main() {
 
     return 0;
 }
-

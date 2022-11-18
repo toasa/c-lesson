@@ -1,54 +1,47 @@
 #include "parser.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-
+#include <string.h>
 
 void goto_forward(struct Substr *inout_str, int delta) {
-    inout_str->ptr = inout_str->ptr+delta;
+    inout_str->ptr = inout_str->ptr + delta;
     inout_str->len -= delta;
 }
 
 void skip_space(struct Substr *inout_str) {
     int newbeg = 0;
-    while(inout_str->ptr[newbeg] == ' ') newbeg++;
+    while (inout_str->ptr[newbeg] == ' ')
+        newbeg++;
     goto_forward(inout_str, newbeg);
 }
 
-int is_number_char(char c) {
-    return c >= '0' && c <= '9';
-}
+int is_number_char(char c) { return c >= '0' && c <= '9'; }
 
-int is_number(char *str) {
-    return is_number_char(str[0]);
-}
+int is_number(char *str) { return is_number_char(str[0]); }
 
 int parse_number(char *str) {
     int res = 0;
-    while(is_number_char(*str)) {
+    while (is_number_char(*str)) {
         res *= 10;
-        res += (*str++)-'0';
+        res += (*str++) - '0';
     }
     return res;
 }
 
 int is_register(char *str) {
-    if(str[0] == 'r') {
+    if (str[0] == 'r') {
         return (str[1] == '0' || str[1] == '1');
     }
     return 0;
 }
 
-int is_end(struct Substr *in_str) {
-    return in_str->len == 0;
-}
-
+int is_end(struct Substr *in_str) { return in_str->len == 0; }
 
 int begin_with_len(struct Substr *in_str, char *expect, int expect_len) {
     int pos = 0;
-    if(in_str->len < expect_len)
+    if (in_str->len < expect_len)
         return 0;
-    while(in_str->ptr[pos] == expect[pos] && pos < expect_len) {
+    while (in_str->ptr[pos] == expect[pos] && pos < expect_len) {
         pos++;
     }
     return pos == expect_len;
@@ -59,13 +52,13 @@ int begin_with(struct Substr *in_str, char *expect) {
 }
 
 int parse_word(struct Substr *in_str) {
-    if(begin_with(in_str, "add"))
+    if (begin_with(in_str, "add"))
         return OP_ADD;
-    if(begin_with(in_str, "sub"))
+    if (begin_with(in_str, "sub"))
         return OP_SUB;
-    if(begin_with(in_str, "mul"))
+    if (begin_with(in_str, "mul"))
         return OP_MUL;
-    if(begin_with(in_str, "div"))
+    if (begin_with(in_str, "div"))
         return OP_DIV;
 
     fprintf(stderr, "Unknown word, %s\n", in_str->ptr);
@@ -80,8 +73,10 @@ skip below.
 */
 void skip_token(struct Substr *inout_str) {
     int newbeg = 0;
-    while(newbeg < inout_str->len && inout_str->ptr[newbeg] != ' ') { newbeg++; }
-    if(newbeg == inout_str->len) {
+    while (newbeg < inout_str->len && inout_str->ptr[newbeg] != ' ') {
+        newbeg++;
+    }
+    if (newbeg == inout_str->len) {
         inout_str->ptr = NULL;
         inout_str->len = 0;
         return;
@@ -89,27 +84,22 @@ void skip_token(struct Substr *inout_str) {
     goto_forward(inout_str, newbeg);
 }
 
-
-
 /*
 test code
 */
 void assert_true(int boolflag) {
-    if(!boolflag) {
+    if (!boolflag) {
         printf("assert fail\n");
     }
 }
 
-void assert_false(int boolflag) {
-    assert_true(!boolflag);
-}
+void assert_false(int boolflag) { assert_true(!boolflag); }
 
 void assert_int_eq(int expect, int actual) {
-    if(expect != actual) {
+    if (expect != actual) {
         printf("assert fail\n");
     }
 }
-
 
 void test_skip_space_NotSpaceDoNothing() {
     struct Substr sub = {"abc", 3};
@@ -122,7 +112,7 @@ void test_skip_space_NotSpaceDoNothing() {
 
 void test_skip_space() {
     struct Substr sub = {"  abc  ", 7};
-    char *expect_ptr = sub.ptr+2;
+    char *expect_ptr = sub.ptr + 2;
     skip_space(&sub);
 
     assert_true(expect_ptr == sub.ptr);
@@ -142,7 +132,7 @@ void test_is_XXX() {
 
 void test_skip_token() {
     struct Substr sub = {"abc def", 7};
-    char *expect_ptr = sub.ptr+3;
+    char *expect_ptr = sub.ptr + 3;
 
     skip_token(&sub);
 
@@ -171,9 +161,8 @@ void test_skip_token_TillEnd() {
     assert_int_eq(0, sub.len);
 }
 
-
 void test_skip_token_DoNothingWhenEnd() {
-    struct Substr sub = { NULL, 0};
+    struct Substr sub = {NULL, 0};
 
     skip_token(&sub);
 
@@ -181,9 +170,7 @@ void test_skip_token_DoNothingWhenEnd() {
     assert_int_eq(0, sub.len);
 }
 
-void test_parse_number() {
-    assert_int_eq(123, parse_number("123"));
-}
+void test_parse_number() { assert_int_eq(123, parse_number("123")); }
 
 void test_begin_with() {
     struct Substr sub = {"def", 3};
@@ -193,7 +180,6 @@ void test_begin_with() {
     assert_false(begin_with(&sub, "defg"));
     assert_false(begin_with(&sub, "very"));
 }
-
 
 static void run_unit_tests() {
     test_skip_space_NotSpaceDoNothing();
@@ -209,7 +195,6 @@ static void run_unit_tests() {
     test_parse_number();
 
     test_begin_with();
-
 
     printf("all test done\n");
 }
