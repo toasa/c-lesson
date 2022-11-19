@@ -27,13 +27,40 @@ void ensure_jit_buf() {
 int *jit_script(char *input) {
     ensure_jit_buf();
 
-    int8_t imm = (int8_t)parse_number(input);
+    struct Substr remain = {input, strlen(input)};
+    int pos = 0;
 
-    binary_buf[0] = 0xE3A02000 | imm; // mov r2, imm
-    binary_buf[1] = 0xE92D0004;       // stmfd sp!, {r2}
-    binary_buf[2] = 0xE8BD0004;       // ldmia sp!, {r2}
-    binary_buf[3] = 0xE1A00002;       // mov r0, r2
-    binary_buf[4] = 0xE1A0F00E;       // mov r15, r14
+    while (!is_end(&remain)) {
+        skip_space(&remain);
+        if (is_number(remain.ptr)) {
+            int8_t imm = (int8_t)parse_number(remain.ptr);
+            binary_buf[pos++] = 0xE3A02000 | imm; // mov r2, imm
+            binary_buf[pos++] = 0xE92D0004;       // stmfd sp!, {r2}
+
+            skip_token(&remain);
+            continue;
+        } else if (is_register(remain.ptr)) {
+            int reg = remain.ptr[1] == '1' ? 1 : 0;
+            // Emit either:
+            //  - stmfd sp!, r0
+            //  - stmfd sp!, r1
+            int word = 0xE92D0000 | (1 << reg);
+            binary_buf[pos++] = word;
+
+            skip_token(&remain);
+            continue;
+        } else {
+            fprintf(stderr, "Unknown token");
+            exit(1);
+        }
+    }
+
+    // Pop the calculation result and store it into r0.
+    binary_buf[pos++] = 0xE8BD0004; // ldmia sp!, {r2}
+    binary_buf[pos++] = 0xE1A00002; // mov r0, r2
+
+    // Function epilogue.
+    binary_buf[pos++] = 0xE1A0F00E; // mov pc, lr
 
     return binary_buf;
 }
@@ -60,8 +87,25 @@ static void test_single_int(void) {
     assert_int_eq(res, 123);
 }
 
+static void test_register(void) {
+    struct JITContext ctx = {
+        .r0 = 10,
+        .r1 = 20,
+    };
+
+    for (int i = 0; i < 2; i++) {
+        ctx.input = (i == 0) ? "r0" : "r1";
+        int actual = run_jit_script(&ctx);
+
+        int expected = (i == 0) ? ctx.r0 : ctx.r1;
+
+        assert_int_eq(actual, expected);
+    }
+}
+
 static void run_unit_tests() {
     test_single_int();
+    test_register();
 
     printf("all test done\n");
 }
