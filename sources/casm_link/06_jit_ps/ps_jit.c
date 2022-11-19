@@ -38,10 +38,25 @@ int *jit_script(char *input) {
     return binary_buf;
 }
 
+struct JITContext {
+    char *input;
+    int r0;
+    int r1;
+};
+
+static int run_jit_script(struct JITContext *ctx) {
+    int (*funcvar)(int, int) = (int (*)(int, int))jit_script(ctx->input);
+    return funcvar(ctx->r0, ctx->r1);
+}
+
 static void test_single_int(void) {
-    int (*funcvar)(int, int);
-    funcvar = (int (*)(int, int))jit_script("123");
-    int res = funcvar(10, 20);
+    struct JITContext ctx = {
+        .input = "123",
+        .r0 = 10,
+        .r1 = 20,
+    };
+
+    int res = run_jit_script(&ctx);
     assert_int_eq(res, 123);
 }
 
