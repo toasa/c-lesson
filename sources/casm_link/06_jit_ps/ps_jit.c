@@ -26,16 +26,27 @@ void ensure_jit_buf() {
 
 int *jit_script(char *input) {
     ensure_jit_buf();
-    /*
-    TODO: emit binary here
-    */
-    // dummy code to avoid crash.
-    binary_buf[0] = 0xe1a0f00e; // 0xe1a0f00e
+
+    int8_t imm = (int8_t)parse_number(input);
+
+    binary_buf[0] = 0xE3A00000 | imm; // mov r0, imm
+    binary_buf[1] = 0xE1A0F00E;       // mov r15, r14
 
     return binary_buf;
 }
 
-static void run_unit_tests() { printf("all test done\n"); }
+static void test_single_int(void) {
+    int (*funcvar)(int, int);
+    funcvar = (int (*)(int, int))jit_script("123");
+    int res = funcvar(10, 20);
+    assert_int_eq(res, 123);
+}
+
+static void run_unit_tests() {
+    test_single_int();
+
+    printf("all test done\n");
+}
 
 int main() {
     run_unit_tests();
