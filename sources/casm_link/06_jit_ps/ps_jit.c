@@ -29,8 +29,11 @@ int *jit_script(char *input) {
 
     int8_t imm = (int8_t)parse_number(input);
 
-    binary_buf[0] = 0xE3A00000 | imm; // mov r0, imm
-    binary_buf[1] = 0xE1A0F00E;       // mov r15, r14
+    binary_buf[0] = 0xE3A02000 | imm; // mov r2, imm
+    binary_buf[1] = 0xE92D0004;       // stmfd sp!, {r2}
+    binary_buf[2] = 0xE8BD0004;       // ldmia sp!, {r2}
+    binary_buf[3] = 0xE1A00002;       // mov r0, r2
+    binary_buf[4] = 0xE1A0F00E;       // mov r15, r14
 
     return binary_buf;
 }
