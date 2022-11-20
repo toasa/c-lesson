@@ -1,5 +1,5 @@
 CC = arm-linux-gnueabi-gcc
-SRCS = parser.c ps_jit.c asm.c
+SRCS = parser.c ps_jit.c ps_jit_test.c asm.c
 
 a.out: $(SRCS)
 	$(CC) $(SRCS)

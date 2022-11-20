@@ -1,0 +1,1 @@
+int *jit_script(char *input);
