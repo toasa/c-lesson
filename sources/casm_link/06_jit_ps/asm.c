@@ -11,3 +11,11 @@ int asm_ldmia(int r) { return 0xE8BD0000 | (1 << r); }
 int asm_add(int r, int r1, int r2) {
     return 0xE0800000 | (r << 12) | (r1 << 16) | r2;
 }
+
+int asm_sub(int r, int r1, int r2) {
+    return 0xE0400000 | (r << 12) | (r1 << 16) | r2;
+}
+
+int asm_mul(int r, int r1, int r2) {
+    return 0xE0000090 | (r << 16) | (r1 << 8) | r2;
+}

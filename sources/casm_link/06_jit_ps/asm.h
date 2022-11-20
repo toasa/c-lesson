@@ -22,3 +22,5 @@ int asm_mov_imm(int r, int imm);
 int asm_stfmd(int r);
 int asm_ldmia(int r);
 int asm_add(int r, int r1, int r2); // r = r1 + r2
+int asm_sub(int r, int r1, int r2); // r = r1 - r2
+int asm_mul(int r, int r1, int r2); // r = r1 * r2

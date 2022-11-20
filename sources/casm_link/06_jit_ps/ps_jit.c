@@ -48,15 +48,21 @@ int *jit_script(char *input) {
             int op = parse_word(&remain);
             skip_token(&remain);
 
-            if (op != OP_ADD) {
-                fprintf(stderr, "Unknown token");
-                exit(1);
-            }
-
             // R2 is operand of left hand side and R3 is right.
             binary_buf[pos++] = asm_ldmia(R3);
             binary_buf[pos++] = asm_ldmia(R2);
-            binary_buf[pos++] = asm_add(R2, R2, R3);
+            switch (op) {
+            case OP_ADD:
+                binary_buf[pos++] = asm_add(R2, R2, R3);
+                break;
+            case OP_SUB:
+                binary_buf[pos++] = asm_sub(R2, R2, R3);
+                break;
+            case OP_MUL:
+                binary_buf[pos++] = asm_mul(R2, R2, R3);
+                break;
+            }
+
             binary_buf[pos++] = asm_stfmd(R2);
         }
     }
@@ -166,11 +172,39 @@ static void test_add(void) {
     assert_int_eq(res, 33);
 }
 
+static void test_sub_mul(void) {
+    struct JITContext ctxs[] = {
+        {
+            .r0 = 6,
+            .r1 = 4,
+            .input = "r0 r1 sub",
+        },
+        {
+            .r0 = 6,
+            .r1 = 4,
+            .input = "r0 r1 mul",
+        },
+    };
+
+    int expecteds[] = {
+        2,
+        24,
+    };
+
+    for (int i = 0; i < ARR_SIZE(ctxs); i++) {
+        int actual = run_jit_script(&ctxs[i]);
+        int expected = expecteds[i];
+
+        assert_int_eq(actual, expected);
+    }
+}
+
 static void run_unit_tests() {
     test_single_int();
     test_register();
     test_multi_int_and_reg();
     test_add();
+    test_sub_mul();
 
     printf("all test done\n");
 }
