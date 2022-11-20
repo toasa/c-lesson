@@ -66,6 +66,7 @@ int *jit_script(char *input) {
             // R2 is operand of left hand side and R3 is right.
             emit(e, asm_ldmia(R3));
             emit(e, asm_ldmia(R2));
+
             switch (op) {
             case OP_ADD:
                 emit(e, asm_add(R2, R2, R3));
