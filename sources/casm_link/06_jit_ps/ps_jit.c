@@ -199,12 +199,42 @@ static void test_sub_mul(void) {
     }
 }
 
+static void test_add_sub_mul(void) {
+    char *input = "3 7 add r1 sub 4 mul";
+
+    struct JITContext ctxs[] = {
+        {
+            .r0 = 1,
+            .r1 = 5,
+            .input = input,
+        },
+        {
+            .r0 = 1,
+            .r1 = 4,
+            .input = input,
+        },
+    };
+
+    int expecteds[] = {
+        20,
+        24,
+    };
+
+    for (int i = 0; i < ARR_SIZE(ctxs); i++) {
+        int actual = run_jit_script(&ctxs[i]);
+        int expected = expecteds[i];
+
+        assert_int_eq(actual, expected);
+    }
+}
+
 static void run_unit_tests() {
     test_single_int();
     test_register();
     test_multi_int_and_reg();
     test_add();
     test_sub_mul();
+    test_add_sub_mul();
 
     printf("all test done\n");
 }
