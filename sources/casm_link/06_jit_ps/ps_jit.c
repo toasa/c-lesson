@@ -9,9 +9,6 @@
 
 extern int eval(int r0, int r1, char *str);
 
-/*
-JIT
-*/
 int *binary_buf = NULL;
 
 int *allocate_executable_buf(int size) {
