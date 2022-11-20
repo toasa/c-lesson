@@ -104,14 +104,14 @@ static void test_single_int(void) {
 static void test_register(void) {
     struct JITContext ctxs[] = {
         {
+            .input = "r0",
             .r0 = 10,
             .r1 = 20,
-            .input = "r0",
         },
         {
+            .input = "r1",
             .r0 = 10,
             .r1 = 20,
-            .input = "r1",
         },
     };
 
@@ -131,19 +131,19 @@ static void test_register(void) {
 static void test_multi_int_and_reg(void) {
     struct JITContext ctxs[] = {
         {
-            .r0 = 11,
-            .r1 = 22,
             .input = "10 20 30",
-        },
-        {
             .r0 = 11,
             .r1 = 22,
+        },
+        {
             .input = "10 20 r0",
-        },
-        {
             .r0 = 11,
             .r1 = 22,
+        },
+        {
             .input = "10 20 r1",
+            .r0 = 11,
+            .r1 = 22,
         },
     };
 
@@ -175,14 +175,14 @@ static void test_add(void) {
 static void test_sub_mul(void) {
     struct JITContext ctxs[] = {
         {
+            .input = "r0 r1 sub",
             .r0 = 6,
             .r1 = 4,
-            .input = "r0 r1 sub",
         },
         {
+            .input = "r0 r1 mul",
             .r0 = 6,
             .r1 = 4,
-            .input = "r0 r1 mul",
         },
     };
 
@@ -204,14 +204,14 @@ static void test_add_sub_mul(void) {
 
     struct JITContext ctxs[] = {
         {
+            .input = input,
             .r0 = 1,
             .r1 = 5,
-            .input = input,
         },
         {
+            .input = input,
             .r0 = 1,
             .r1 = 4,
-            .input = input,
         },
     };
 
