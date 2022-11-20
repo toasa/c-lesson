@@ -7,8 +7,6 @@
 #include "parser.h"
 #include "test_util.h"
 
-extern int eval(int r0, int r1, char *str);
-
 int *binary_buf = NULL;
 
 int *allocate_executable_buf(int size) {
@@ -241,20 +239,6 @@ static void run_unit_tests() {
 
 int main() {
     run_unit_tests();
-
-    int res = eval(1, 5, "3 7 add r1 sub 4 mul");
-    printf("res=%d\n", res);
-
-    // /*
-    //  TODO: Make below test pass.
-    // */
-    // funcvar = (int (*)(int, int))jit_script("3 7 add r1 sub 4 mul");
-
-    // res = funcvar(1, 5);
-    // assert_int_eq(20, res);
-
-    // res = funcvar(1, 4);
-    // assert_int_eq(24, res);
 
     return 0;
 }
