@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/mman.h>
 
+#include "asm.h"
 #include "parser.h"
 #include "test_util.h"
 
@@ -34,8 +35,8 @@ int *jit_script(char *input) {
         skip_space(&remain);
         if (is_number(remain.ptr)) {
             int8_t imm = (int8_t)parse_number(remain.ptr);
-            binary_buf[pos++] = 0xE3A02000 | imm; // mov r2, imm
-            binary_buf[pos++] = 0xE92D0004;       // stmfd sp!, {r2}
+            binary_buf[pos++] = asm_mov_imm(0x2, imm); // mov r2, imm
+            binary_buf[pos++] = asm_stfmd(0x2);        // stmfd sp!, {r2}
 
             skip_token(&remain);
             continue;
@@ -44,8 +45,7 @@ int *jit_script(char *input) {
             // Emit either:
             //  - stmfd sp!, r0
             //  - stmfd sp!, r1
-            int word = 0xE92D0000 | (1 << reg);
-            binary_buf[pos++] = word;
+            binary_buf[pos++] = asm_stfmd(reg);
 
             skip_token(&remain);
             continue;
@@ -56,11 +56,11 @@ int *jit_script(char *input) {
     }
 
     // Pop the calculation result and store it into r0.
-    binary_buf[pos++] = 0xE8BD0004; // ldmia sp!, {r2}
-    binary_buf[pos++] = 0xE1A00002; // mov r0, r2
+    binary_buf[pos++] = asm_ldmia(0x2);    // ldmia sp!, {r2}
+    binary_buf[pos++] = asm_mov(0x0, 0x2); // mov r0, r2
 
     // Function epilogue.
-    binary_buf[pos++] = 0xE1A0F00E; // mov pc, lr
+    binary_buf[pos++] = asm_mov(0xF, 0xE); // mov pc, lr
 
     return binary_buf;
 }
