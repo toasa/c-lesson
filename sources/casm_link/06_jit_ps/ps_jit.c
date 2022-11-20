@@ -35,16 +35,13 @@ int *jit_script(char *input) {
         skip_space(&remain);
         if (is_number(remain.ptr)) {
             int8_t imm = (int8_t)parse_number(remain.ptr);
-            binary_buf[pos++] = asm_mov_imm(0x2, imm); // mov r2, imm
-            binary_buf[pos++] = asm_stfmd(0x2);        // stmfd sp!, {r2}
+            binary_buf[pos++] = asm_mov_imm(R2, imm);
+            binary_buf[pos++] = asm_stfmd(R2);
 
             skip_token(&remain);
             continue;
         } else if (is_register(remain.ptr)) {
-            int reg = remain.ptr[1] == '1' ? 1 : 0;
-            // Emit either:
-            //  - stmfd sp!, r0
-            //  - stmfd sp!, r1
+            int reg = remain.ptr[1] == '1' ? R1 : R0;
             binary_buf[pos++] = asm_stfmd(reg);
 
             skip_token(&remain);
@@ -56,11 +53,11 @@ int *jit_script(char *input) {
     }
 
     // Pop the calculation result and store it into r0.
-    binary_buf[pos++] = asm_ldmia(0x2);    // ldmia sp!, {r2}
-    binary_buf[pos++] = asm_mov(0x0, 0x2); // mov r0, r2
+    binary_buf[pos++] = asm_ldmia(R2);
+    binary_buf[pos++] = asm_mov(R0, R2);
 
     // Function epilogue.
-    binary_buf[pos++] = asm_mov(0xF, 0xE); // mov pc, lr
+    binary_buf[pos++] = asm_mov(PC, LR);
 
     return binary_buf;
 }
