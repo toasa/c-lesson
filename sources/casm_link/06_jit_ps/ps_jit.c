@@ -59,6 +59,8 @@ int *jit_script(char *input) {
     return binary_buf;
 }
 
+#define ARR_SIZE(a) (int)(sizeof(a) / sizeof(a[0]))
+
 struct JITContext {
     char *input;
     int r0;
@@ -82,16 +84,60 @@ static void test_single_int(void) {
 }
 
 static void test_register(void) {
-    struct JITContext ctx = {
-        .r0 = 10,
-        .r1 = 20,
+    struct JITContext ctxs[] = {
+        {
+            .r0 = 10,
+            .r1 = 20,
+            .input = "r0",
+        },
+        {
+            .r0 = 10,
+            .r1 = 20,
+            .input = "r1",
+        },
     };
 
-    for (int i = 0; i < 2; i++) {
-        ctx.input = (i == 0) ? "r0" : "r1";
-        int actual = run_jit_script(&ctx);
+    int expecteds[] = {
+        10,
+        20,
+    };
 
-        int expected = (i == 0) ? ctx.r0 : ctx.r1;
+    for (int i = 0; i < ARR_SIZE(ctxs); i++) {
+        int actual = run_jit_script(&ctxs[i]);
+        int expected = expecteds[i];
+
+        assert_int_eq(actual, expected);
+    }
+}
+
+static void test_multi_int_and_reg(void) {
+    struct JITContext ctxs[] = {
+        {
+            .r0 = 11,
+            .r1 = 22,
+            .input = "10 20 30",
+        },
+        {
+            .r0 = 11,
+            .r1 = 22,
+            .input = "10 20 r0",
+        },
+        {
+            .r0 = 11,
+            .r1 = 22,
+            .input = "10 20 r1",
+        },
+    };
+
+    int expecteds[] = {
+        30,
+        11,
+        22,
+    };
+
+    for (int i = 0; i < ARR_SIZE(ctxs); i++) {
+        int actual = run_jit_script(&ctxs[i]);
+        int expected = expecteds[i];
 
         assert_int_eq(actual, expected);
     }
@@ -100,6 +146,7 @@ static void test_register(void) {
 static void run_unit_tests() {
     test_single_int();
     test_register();
+    test_multi_int_and_reg();
 
     printf("all test done\n");
 }
