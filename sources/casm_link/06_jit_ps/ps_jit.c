@@ -7,14 +7,14 @@
 #include "ps_jit.h"
 #include "ps_jit_test.h"
 
-int *binary_buf = NULL;
+static int *binary_buf = NULL;
 
-int *allocate_executable_buf(int size) {
+static int *allocate_executable_buf(int size) {
     return (int *)mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC,
                        MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
-void ensure_jit_buf() {
+static void ensure_jit_buf() {
     if (binary_buf == NULL) {
         binary_buf = allocate_executable_buf(1024);
     }

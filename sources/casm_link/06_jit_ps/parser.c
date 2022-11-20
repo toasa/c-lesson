@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void goto_forward(struct Substr *inout_str, int delta) {
+static void goto_forward(struct Substr *inout_str, int delta) {
     inout_str->ptr = inout_str->ptr + delta;
     inout_str->len -= delta;
 }
@@ -47,7 +47,7 @@ int begin_with_len(struct Substr *in_str, char *expect, int expect_len) {
     return pos == expect_len;
 }
 
-int begin_with(struct Substr *in_str, char *expect) {
+static int begin_with(struct Substr *in_str, char *expect) {
     return begin_with_len(in_str, expect, strlen(expect));
 }
 
@@ -101,7 +101,7 @@ void assert_int_eq(int expect, int actual) {
     }
 }
 
-void test_skip_space_NotSpaceDoNothing() {
+static void test_skip_space_NotSpaceDoNothing() {
     struct Substr sub = {"abc", 3};
     char *expect_ptr = sub.ptr;
     skip_space(&sub);
@@ -110,7 +110,7 @@ void test_skip_space_NotSpaceDoNothing() {
     assert_int_eq(3, sub.len);
 }
 
-void test_skip_space() {
+static void test_skip_space() {
     struct Substr sub = {"  abc  ", 7};
     char *expect_ptr = sub.ptr + 2;
     skip_space(&sub);
@@ -120,7 +120,7 @@ void test_skip_space() {
     assert_int_eq(5, sub.len);
 }
 
-void test_is_XXX() {
+static void test_is_XXX() {
     assert_true(is_number("123"));
     assert_false(is_number("a123"));
 
@@ -130,7 +130,7 @@ void test_is_XXX() {
     assert_true(is_register("r1"));
 }
 
-void test_skip_token() {
+static void test_skip_token() {
     struct Substr sub = {"abc def", 7};
     char *expect_ptr = sub.ptr + 3;
 
@@ -141,7 +141,7 @@ void test_skip_token() {
     assert_true(sub.ptr[0] == ' ');
 }
 
-void test_skip_token_DoNothingWhenSpace() {
+static void test_skip_token_DoNothingWhenSpace() {
     struct Substr sub = {" def", 4};
     char *expect_ptr = sub.ptr;
 
@@ -152,7 +152,7 @@ void test_skip_token_DoNothingWhenSpace() {
     assert_true(sub.ptr[0] == ' ');
 }
 
-void test_skip_token_TillEnd() {
+static void test_skip_token_TillEnd() {
     struct Substr sub = {"def", 3};
 
     skip_token(&sub);
@@ -161,7 +161,7 @@ void test_skip_token_TillEnd() {
     assert_int_eq(0, sub.len);
 }
 
-void test_skip_token_DoNothingWhenEnd() {
+static void test_skip_token_DoNothingWhenEnd() {
     struct Substr sub = {NULL, 0};
 
     skip_token(&sub);
@@ -170,9 +170,9 @@ void test_skip_token_DoNothingWhenEnd() {
     assert_int_eq(0, sub.len);
 }
 
-void test_parse_number() { assert_int_eq(123, parse_number("123")); }
+static void test_parse_number() { assert_int_eq(123, parse_number("123")); }
 
-void test_begin_with() {
+static void test_begin_with() {
     struct Substr sub = {"def", 3};
     assert_true(begin_with(&sub, "de"));
     assert_true(begin_with(&sub, "def"));
