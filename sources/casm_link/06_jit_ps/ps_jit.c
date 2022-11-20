@@ -44,8 +44,20 @@ int *jit_script(char *input) {
             skip_token(&remain);
             continue;
         } else {
-            fprintf(stderr, "Unknown token");
-            exit(1);
+            // Must be op.
+            int op = parse_word(&remain);
+            skip_token(&remain);
+
+            if (op != OP_ADD) {
+                fprintf(stderr, "Unknown token");
+                exit(1);
+            }
+
+            // R2 is operand of left hand side and R3 is right.
+            binary_buf[pos++] = asm_ldmia(R3);
+            binary_buf[pos++] = asm_ldmia(R2);
+            binary_buf[pos++] = asm_add(R2, R2, R3);
+            binary_buf[pos++] = asm_stfmd(R2);
         }
     }
 
@@ -143,10 +155,22 @@ static void test_multi_int_and_reg(void) {
     }
 }
 
+static void test_add(void) {
+    struct JITContext ctx = {
+        .input = "11 22 add",
+        .r0 = 10,
+        .r1 = 20,
+    };
+
+    int res = run_jit_script(&ctx);
+    assert_int_eq(res, 33);
+}
+
 static void run_unit_tests() {
     test_single_int();
     test_register();
     test_multi_int_and_reg();
+    test_add();
 
     printf("all test done\n");
 }
