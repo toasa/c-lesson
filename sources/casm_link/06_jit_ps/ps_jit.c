@@ -46,7 +46,7 @@ int *jit_script(char *input) {
     while (!is_end(&remain)) {
         skip_space(&remain);
         if (is_number(remain.ptr)) {
-            int8_t imm = (int8_t)parse_number(remain.ptr);
+            int imm = parse_number(remain.ptr);
             emit(e, asm_mov_imm(R2, imm));
             emit(e, asm_stfmd(R2));
 
