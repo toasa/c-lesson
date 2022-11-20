@@ -52,7 +52,7 @@ int *jit_script(char *input) {
         }
     }
 
-    // Pop the calculation result and store it into r0.
+    // Pop the calculation result and store it into r0 as return value.
     binary_buf[pos++] = asm_ldmia(R2);
     binary_buf[pos++] = asm_mov(R0, R2);
 
